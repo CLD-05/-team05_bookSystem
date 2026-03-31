@@ -107,6 +107,37 @@
         section {
             text-align: center;
             justify-content: center;
+            margin-top: 30px;
+        }
+
+        .user-info {
+            border: solid 2px;
+            border-radius: 20px;
+            width: 600px;
+            height: 130px;
+            margin: 0 auto;
+        }
+
+        .user-info p {
+            font-size: 20px;
+            margin-left: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .rent-info {
+            border: solid 2px;
+            border-radius: 20px;
+            width: 600px;
+            height: 250px;
+            margin: 0 auto;
+        }
+
+        .rent-info p {
+            display: flex;
+            font-size: 20px;
+            justify-content: space-around;
+            text-align: center;
         }
     </style>
 </head>
@@ -124,7 +155,24 @@
     </header>
 
     <section>
-        <h2>#이름 님의 회원정보</h2>
+        <h2 style="margin-bottom: 30px;">#이름 님의 회원정보</h2>
+        <div class="user-info">
+            <p>닉네임: ###</p>
+            <p>이메일: ###</p>
+        </div>
+
+        <br>
+
+        <h4>대여 상태 (남은 권수)</h4>
+
+        <div class="rent-info">
+            <p>
+                <span>책제목</span>
+                <span>저자명</span>
+                <span>대여일</span>
+                <span>반납일</span>
+            </p>
+        </div>
     </section>
 </body>
 
