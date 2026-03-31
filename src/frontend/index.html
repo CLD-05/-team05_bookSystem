@@ -1,23 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Header</title>
+    <link rel="preconnect" href="
+https://fonts.googleapis.com/
+">
+    <link rel="preconnect" href="
+https://fonts.gstatic.com/
+" crossorigin>
+    <link href="
+https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap
+" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        :root {
+            --primary: #F59E0B;
+            --primary-dark: #D97706;
+            --bg: #FFFFFF;
+            --text: #1C1917;
+            --text-muted: #78716C;
+            --border: #E7E5E4;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            background: #FFFFFF;
+            border-bottom: 1.5px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            line-height: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
+        }
+
+        .logo-text {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            padding: 7px 16px;
+            border-radius: 8px;
+            transition: background 0.18s, color 0.18s;
+        }
+
+        nav a:hover {
+            background: #F5F5F4;
+            color: var(--text);
+        }
+
+        nav a.btn-logout {
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        nav a.btn-mypage {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        nav a.btn-mypage:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+        .divider {
+            width: 1px;
+            height: 16px;
+            background: var(--border);
+            margin: 0 2px;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            padding: 100px;
+        }
+
+        .search-form {
+            display: flex;
+            width: 700px;
+            height: 50px;
+            border: solid 2px;
+            border-radius: 20px;
+            margin: 0 auto;
+            background-color: gainsboro;
+        }
+
+        .search-input {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            border: none;
+            outline: none;
+            border-radius: 20px;
+            background: none;
+        }
+
+        .search-btn {
+            font-size: 30px;
+            display: flex;
+            border: none;
+            border-radius: 20px;
+            background: none;
+            background-color: white;
+            text-align: center;
+            justify-content: center;
+            padding-right: 10px;
+            cursor: pointer;
+            background-color: gainsboro;
+        }
+
+        .popular-book {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 40px;
+        }
+
+        .popular-book a {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            flex-direction: column;
+            margin: 20px;
+            padding: 30px;
+            text-decoration: none;
+        }
+
+        .book-info {
+            margin-top: 10px;
+        }
+
+        .popular-book img {
+            border-radius: 8px;
+        }
+    </style>
 </head>
-<nav class="navbar" style="justify-content: space-between; display: flex;">
-    <a href="index.html" class="nav-logo" style="font-size: 20px; margin-left: 10px;">logo</a>
-
-    <div class="nav-menu" style="font-size: 20px; margin: 20px;">
-        <a href="login.html">로그인</a>
-        <a href="login.html">마이페이지</a>
-    </div>
-</nav>
 
 <body>
+    <header>
+        <a class="logo" href="index.html">
+            <span class="logo-icon">📚</span>
+            <span class="logo-text">도서관리시스템</span>
+        </a>
+        <nav>
+            <a href="login.html" class="btn-logout">로그인</a>
+            <a href="login.html" class="btn-mypage">마이페이지</a>
+        </nav>
+    </header>
+    <main>
+        <div>
+            <h1></h1>
+            <form action="/search" method="GET" class="search-form">
+                <input type="text" class="search-input" name="query" placeholder="제목을 입력해주세요.">
+                <button type="submit" class="search-btn">🔍</button>
+            </form>
+        </div>
+    </main>
+    <section>
+        <h2 style="margin-left: 250px;">인기도서</h2>
+        <div class="popular-book">
+            <a href="book_detail.html">
+                <div>
+                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
+                </div>
+                <div class="book-info">
+                    <p>책 제목</p>
+                    <p>저자</p>
+                    <p>한줄 설명</p>
+                </div>
+            </a>
 
+            <a href="book_detail.html">
+                <div>
+                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
+                </div>
+                <div class="book-info">
+                    <p>책 제목</p>
+                    <p>저자</p>
+                    <p>한줄 설명</p>
+                </div>
+            </a>
+
+            <a href="book_detail.html">
+                <div>
+                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
+                </div>
+                <div class="book-info">
+                    <p>책 제목</p>
+                    <p>저자</p>
+                    <p>한줄 설명</p>
+                </div>
+            </a>
+
+            <a href="book_detail.html">
+                <div>
+                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
+                </div>
+                <div class="book-info">
+                    <p>책 제목</p>
+                    <p>저자</p>
+                    <p>한줄 설명</p>
+                </div>
+            </a>
+
+
+        </div>
+    </section>
 
 </body>
 
