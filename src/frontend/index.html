@@ -90,6 +90,11 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             color: var(--text);
         }
 
+        nav a.btn-login {
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+        }
+
         nav a.btn-logout {
             border: 1.5px solid var(--border);
             color: var(--text-muted);
@@ -166,17 +171,19 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             justify-content: center;
             flex-wrap: wrap;
             flex-direction: column;
-            margin: 20px;
-            padding: 30px;
+            padding: 20px;
             text-decoration: none;
         }
 
         .book-info {
             margin-top: 10px;
+            color: black;
         }
 
         .popular-book img {
             border-radius: 8px;
+            width: 150px;
+            height: 200px;
         }
     </style>
 </head>
@@ -188,8 +195,13 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
-            <a href="login.html" class="btn-logout">로그인</a>
-            <a href="login.html" class="btn-mypage">마이페이지</a>
+            <a th:if="${session.user == null}" href="login.html" class="btn-login">로그인</a>
+
+            <th:block th:if="${session.user != null}">
+                <a href="/logout" class="btn-logout">로그아웃</a>
+                <a href="/mypage" class="btn-mypage">마이페이지</a>
+            </th:block>
+
         </nav>
     </header>
     <main>
@@ -202,7 +214,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
         </div>
     </main>
     <section>
-        <h2 style="margin-left: 250px;">인기도서</h2>
+        <h2 style="margin-left: 100px;">인기도서</h2>
         <div class="popular-book">
             <a href="book_detail.html">
                 <div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -106,8 +106,8 @@
 
         section {
             text-align: center;
-            justify-content: center;
-            margin-top: 30px;
+            padding-top: 40px;
+            margin-top: 0 auto;
         }
 
         .user-info {
@@ -129,15 +129,31 @@
             border: solid 2px;
             border-radius: 20px;
             width: 600px;
-            height: 250px;
+            height: 240px;
             margin: 0 auto;
+            overflow: hidden;
         }
 
-        .rent-info p {
+        .rent-header {
             display: flex;
             font-size: 20px;
             justify-content: space-around;
             text-align: center;
+            padding: 10px 0;
+            border-bottom: 2px solid var(--border);
+            background-color: darkgray;
+        }
+
+        .rent-row {
+            display: flex;
+            padding: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rent-row span {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -149,29 +165,37 @@
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
-            <a href="login.html" class="btn-logout">로그인</a>
-            <a href="login.html" class="btn-mypage">마이페이지</a>
+            <a href="/logout" class="btn-logout">로그아웃</a>
+            <a href="mypage.html" class="btn-mypage">마이페이지</a>
         </nav>
     </header>
 
     <section>
-        <h2 style="margin-bottom: 30px;">#이름 님의 회원정보</h2>
+        <h2 style="margin-bottom: 30px;">
+            <span th:text="${user.nickname}">#이름</span>님의 회원정보
+        </h2>
         <div class="user-info">
-            <p>닉네임: ###</p>
-            <p>이메일: ###</p>
+            <p><strong>닉네임:</strong> <span th:text="${user.nickname}">###</span></p>
+            <p><strong>이메일:</strong> <span th:text="${user.email}">###</span></p>
         </div>
 
         <br>
 
-        <h4>대여 상태 (남은 권수)</h4>
-
+        <h4 th:inline="text" style="margin-right: 450px; margin-bottom: 10px;">대여 상태
+            (남은 권수 [[${user.current_rental_count}]] / [[${user.max_rental_limit}]])</h4>
         <div class="rent-info">
-            <p>
-                <span>책제목</span>
-                <span>저자명</span>
-                <span>대여일</span>
-                <span>반납일</span>
-            </p>
+            <div class="rent-header">
+                <span><strong>책제목</strong></span>
+                <span><strong>저자명</strong></span>
+                <span><strong>대여일</strong></span>
+                <span><strong>반납일</strong></span>
+            </div>
+            <div class="rent-row" th:each="book : ${rentedBooks}">
+                <span th:text="${book.title}">책제목</span>
+                <span th:text="${book.author}">저자명</span>
+                <span th:text="${book.loan_Date}">2026-03-25</span>
+                <span th:text="${book.return_Date}">2026-04-01</span>
+            </div>
         </div>
     </section>
 </body>
