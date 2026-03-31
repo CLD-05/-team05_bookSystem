@@ -8,6 +8,7 @@ import com.example.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,12 +24,16 @@ public class UserController {
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
     }
 
-    // 2. 로그인
+    // 2. 로그인 (수정본)
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto dto) {
+    public ResponseEntity<String> login(@RequestBody LoginDto dto, HttpSession session) {
         UserEntity user = userService.login(dto);
-        // 로그인 성공 시 닉네임을 반환하거나 "성공" 메시지를 보냅니다.
-        return ResponseEntity.ok(user.getNickname() + "님, 환영합니다!");
+
+        // 핵심: 세션에 로그인한 유저의 식별자(ID)를 저장합니다.
+        // 나중에 대출할 때 이 "loggedInUser" 키로 아이디를 꺼내 쓸 거예요.
+        session.setAttribute("loggedInUser", user.getUserId());
+
+        return ResponseEntity.ok(user.getNickname() + "님, 환영합니다! (세션 저장 완료)");
     }
 
     // 3. 아이디 찾기
@@ -44,4 +49,11 @@ public class UserController {
         userService.resetPassword(dto);
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
+    // 5. 로그아웃 (추가 권장)
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화 (기억 삭제)
+        return ResponseEntity.ok("로그아웃 되었습니다.");
+    }
+
 }
