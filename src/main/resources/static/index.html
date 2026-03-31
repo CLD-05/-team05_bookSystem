@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>BookSystem 통합 테스트</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; padding: 30px; background-color: #f4f7f6; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; }
+        .box { border: 2px solid #ddd; padding: 20px; border-radius: 10px; width: 350px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; margin-right: 5px; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        button.blue { background-color: #007bff; }
+        button.gray { background-color: #6c757d; }
+        button.orange { background-color: #ff9800; }
+        #result { margin-top: 20px; padding: 20px; background-color: #333; color: #00ff00; border-radius: 10px; font-family: 'Courier New', monospace; min-height: 50px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+<h2>📚 도서 시스템 통합 관리 패널</h2>
+
+<div class="container">
+    <div class="box" style="border-top: 5px solid #007bff;">
+        <h3 style="color: #007bff;">0. 회원가입</h3>
+        <input type="email" id="reg-email" placeholder="이메일 (중복검사 대상)">
+        <input type="text" id="reg-nickname" placeholder="닉네임 (로그인 ID로 사용)">
+        <input type="password" id="reg-password" placeholder="비밀번호">
+        <button class="blue" onclick="signup()">가입하기 (POST)</button>
+    </div>
+
+    <div class="box" style="border-top: 5px solid #4CAF50;">
+        <h3 style="color: #4CAF50;">1. 로그인</h3>
+        <input type="text" id="login-nickname" placeholder="닉네임 입력">
+        <input type="password" id="login-password" placeholder="비밀번호 입력">
+        <button onclick="login()">로그인 (POST)</button>
+        <button class="gray" onclick="logout()">로그아웃</button>
+    </div>
+
+    <div class="box" style="border-top: 5px solid #6c757d;">
+        <h3>2. 내 정보 확인</h3>
+        <p style="font-size: 12px; color: gray;">로그인 후 조회가 가능합니다.</p>
+        <button class="gray" onclick="lookup()">세션 정보 조회 (GET)</button>
+    </div>
+
+    <div class="box" style="border-top: 5px solid #ff9800;">
+        <h3 style="color: #ff9800;">3. 아이디/비번 찾기</h3>
+        <p><strong>[닉네임 찾기]</strong></p>
+        <input type="email" id="find-email" placeholder="가입한 이메일">
+        <input type="password" id="find-pw" placeholder="가입 시 비밀번호">
+        <button class="orange" onclick="findId()">닉네임 찾기 (GET)</button>
+
+        <hr>
+        <p><strong>[비밀번호 재설정]</strong></p>
+        <input type="text" id="res-nickname" placeholder="본인 닉네임">
+        <input type="email" id="res-email" placeholder="본인 이메일">
+        <input type="password" id="res-newpw" placeholder="새 비밀번호 입력">
+        <button class="orange" onclick="resetPw()">비밀번호 변경 (POST)</button>
+    </div>
+</div>
+
+<div id="result">콘솔 로그가 이곳에 표시됩니다... 👇</div>
+
+<script>
+    const resultDiv = document.getElementById('result');
+
+    function showResult(tag, text) {
+        resultDiv.innerText = `[${tag}] ${text}`;
+    }
+
+    // 0. 회원가입
+    async function signup() {
+        const email = document.getElementById('reg-email').value;
+        const nickname = document.getElementById('reg-nickname').value;
+        const password = document.getElementById('reg-password').value;
+
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, nickname, password })
+        });
+        showResult("회원가입", await response.text());
+    }
+
+    // 1. 로그인 (닉네임 기반)
+    async function login() {
+        const nickname = document.getElementById('login-nickname').value;
+        const password = document.getElementById('login-password').value;
+
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nickname, password })
+        });
+        showResult("로그인", await response.text());
+    }
+
+    // 2. 조회
+    async function lookup() {
+        const response = await fetch('/api/lookup');
+        showResult("조회", await response.text());
+    }
+
+    // 3. 로그아웃
+    async function logout() {
+        const response = await fetch('/api/logout', { method: 'POST' });
+        showResult("로그아웃", await response.text());
+    }
+
+    // 4. 아이디 찾기 (이메일/비번)
+    async function findId() {
+        const email = document.getElementById('find-email').value;
+        const pw = document.getElementById('find-pw').value;
+        const response = await fetch(`/api/find-id?email=${email}&password=${pw}`);
+        const text = await response.text();
+        showResult("아이디 찾기", text.includes("없습니다") ? text : "당신의 닉네임은: " + text);
+    }
+
+    // 5. 비밀번호 재설정 (닉네임/이메일)
+    async function resetPw() {
+        const data = {
+            nickname: document.getElementById('res-nickname').value,
+            email: document.getElementById('res-email').value,
+            newPassword: document.getElementById('res-newpw').value
+        };
+        const response = await fetch('/api/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        showResult("비밀번호 재설정", await response.text());
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 및 계정찾기</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px; max-width: 400px; }
+        h3 { margin-top: 0; color: #333; }
+        input { margin-bottom: 10px; padding: 8px; width: 90%; display: block; }
+        button { margin-right: 5px; padding: 8px 15px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn-sub { background: #6c757d; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+<div class="section">
+    <h3>🔑 로그인</h3>
+    <input type="text" id="loginNickname" placeholder="닉네임">
+    <input type="password" id="loginPassword" placeholder="비밀번호">
+    <button class="btn-primary" onclick="login()">로그인</button>
+    <button onclick="lookup()">정보 조회</button>
+    <button onclick="logout()">로그아웃</button>
+</div>
+
+<div class="section">
+    <h3>🔍 닉네임(ID) 찾기</h3>
+    <input type="email" id="findEmail" placeholder="가입한 이메일">
+    <input type="password" id="findPw" placeholder="비밀번호">
+    <button class="btn-sub" onclick="findId()">닉네임 찾기</button>
+</div>
+
+<div class="section">
+    <h3>🛠 비밀번호 재설정</h3>
+    <input type="text" id="resNickname" placeholder="닉네임">
+    <input type="email" id="resEmail" placeholder="이메일">
+    <input type="password" id="resNewPw" placeholder="새 비밀번호">
+    <button class="btn-sub" onclick="resetPw()">비밀번호 변경</button>
+</div>
+
+<script>
+    async function login() {
+        const data = {
+            nickname: document.getElementById('loginNickname').value,
+            password: document.getElementById('loginPassword').value
+        };
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        alert(await res.text());
+    }
+
+    async function lookup() {
+        const res = await fetch('/api/lookup');
+        alert(await res.text());
+    }
+
+    async function logout() {
+        const res = await fetch('/api/logout', { method: 'POST' });
+        alert(await res.text());
+    }
+
+    async function findId() {
+        const email = document.getElementById('findEmail').value;
+        const pw = document.getElementById('findPw').value;
+        const res = await fetch(`/api/find-id?email=${email}&password=${pw}`);
+        const result = await res.text();
+        alert(result.includes("일치") ? result : "찾은 닉네임: " + result);
+    }
+
+    async function resetPw() {
+        const data = {
+            nickname: document.getElementById('resNickname').value,
+            email: document.getElementById('resEmail').value,
+            newPassword: document.getElementById('resNewPw').value
+        };
+        const res = await fetch('/api/reset-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        alert(await res.text());
+    }
+</script>
+</body>
+</html>
