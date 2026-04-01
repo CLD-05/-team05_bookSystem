@@ -124,38 +124,80 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             padding: 100px;
         }
 
-        .search-form {
+        .search-section {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 28px;
             display: flex;
-            width: 700px;
-            height: 50px;
-            border: solid 2px;
-            border-radius: 20px;
-            margin: 0 auto;
-            background-color: gainsboro;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 32px;
         }
 
-        .search-input {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            border: none;
+        .search-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 350px;
+        }
+
+        .search-field label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            white-space: nowrap;
+        }
+
+        .search-field input {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: #FAF9F7;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            width: 250px;
             outline: none;
-            border-radius: 20px;
-            background: none;
+            transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
         }
 
-        .search-btn {
-            font-size: 30px;
-            display: flex;
+        .search-field input:focus {
+            border-color: var(--border-focus);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+        }
+
+        .search-field input::placeholder {
+            color: #C4B9B3;
+        }
+
+        .btn-search {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
             border: none;
             border-radius: 20px;
-            background: none;
-            text-align: center;
-            justify-content: center;
-            padding-right: 10px;
+            padding: 9px 28px;
             cursor: pointer;
-            background-color: gainsboro;
+            letter-spacing: 0.5px;
+            transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.28);
+            margin-left: auto;
+        }
+
+        .btn-search:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.38);
+            transform: translateY(-1px);
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
         }
 
         .popular-book {
@@ -207,12 +249,16 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
         </nav>
     </header>
     <main>
-        <div>
-            <h1></h1>
-            <form action="/search" method="GET" class="search-form">
-                <input type="text" class="search-input" name="query" placeholder="제목을 입력해주세요.">
-                <button type="submit" class="search-btn">🔍</button>
-            </form>
+        <div class="search-section">
+            <div class="search-field">
+                <label for="input-title">책제목:</label>
+                <input type="text" id="input-title" placeholder="제목 입력" />
+            </div>
+            <div class="search-field">
+                <label for="input-author">저자명:</label>
+                <input type="text" id="input-author" placeholder="저자 입력" />
+            </div>
+            <button class="btn-search" onclick="searchBooks()">검색</button>
         </div>
     </main>
     <section style="max-width: 1200px; margin: 0 auto;">
@@ -265,7 +311,47 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
 
         </div>
     </section>
+    <script>
+        function searchBooks() {
+            const titleQ = document.getElementById('input-title').value.trim().toLowerCase();
+            const authorQ = document.getElementById('input-author').value.trim().toLowerCase();
 
+            const filtered = MOCK_BOOKS.filter(b => {
+                const matchTitle = !titleQ || b.title.toLowerCase().includes(titleQ);
+                const matchAuthor = !authorQ || b.author.toLowerCase().includes(authorQ);
+                return matchTitle && matchAuthor;
+            });
+
+            renderBooks(filtered);
+        }
+
+        const isLoggedIn = false;
+
+        // 2. 화면 로드 시 버튼 상태 제어
+        window.onload = function () {
+            const nav = document.querySelector('nav');
+
+            if (isLoggedIn) {
+                // 로그인 된 상태일 때 보여줄 버튼
+                nav.innerHTML = `
+                <a href="/logout" class="btn-logout">로그아웃</a>
+                <a href="/mypage" class="btn-mypage">마이페이지</a>
+            `;
+            } else {
+                // 로그인 안 된 상태일 때 보여줄 버튼
+                nav.innerHTML = `
+                <a href="/login" class="btn-login">로그인</a>
+            `;
+            }
+        }
+
+        // fetch('header_logo.html')
+        //     .then(res => res.text())
+        //     .then(html => {
+        //         document.getElementById('header-container').innerHTML = html;
+        //     })
+
+    </script>
 </body>
 
 </html>
