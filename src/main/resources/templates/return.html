@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>return</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F59E0B;
+            --primary-dark: #D97706;
+            --bg: #FFFFFF;
+            --text: #1C1917;
+            --text-muted: #78716C;
+            --border: #E7E5E4;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            background: #FFFFFF;
+            border-bottom: 1.5px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            line-height: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
+        }
+
+        .logo-text {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            padding: 7px 16px;
+            border-radius: 8px;
+            transition: background 0.18s, color 0.18s;
+        }
+
+        nav a:hover {
+            background: #F5F5F4;
+            color: var(--text);
+        }
+
+        nav a.btn-logout {
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        nav a.btn-mypage {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        nav a.btn-mypage:hover {
+            background: var(--primary-dark);
+            color: #fff;
+        }
+
+        .divider {
+            width: 1px;
+            height: 16px;
+            background: var(--border);
+            margin: 0 2px;
+        }
+
+        .review-box {
+            width: 500px;
+            height: 400px;
+            padding: 50px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .review-box p {
+            font-size: 20px;
+        }
+
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 10px;
+            font-size: 35px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 8px;
+            margin-bottom: 20px;
+            resize: none;
+            background-color: floralwhite;
+            border-radius: 10px;
+        }
+
+        .review-btn {
+            color: white;
+            display: flex;
+            margin: 0 auto;
+            border: none;
+            border-radius: 10px;
+            width: 80px;
+            height: 30px;
+            text-align: center;
+            justify-content: center;
+            background-color: #F59E0B;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .review-btn:hover {
+            background-color: #D97706;
+        }
+
+        .star-rating input:checked~label {
+            color: #F59E0B !important;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover~label {
+            color: #F59E0B !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a class="logo" th:href="@{/}">
+            <span class="logo-icon">📚</span>
+            <span class="logo-text">도서관리시스템</span>
+        </a>
+        <nav>
+            <a href="/logout" class="btn-logout">로그아웃</a>
+            <a th:href="@{/mypage}" class="btn-mypage">마이페이지</a>
+        </nav>
+    </header>
+    <section style="display: flex; justify-content: center; align-items: center; margin: 0 auto; padding-top: 150px;">
+        <div class="review-box">
+            <p>도서 반납이 완료되었습니다.</p>
+            <p>리뷰를 남기시겠습니까?</p>
+            <form action="/review/save" method="POST">
+                <div class="star-rating">
+                    <input type="radio" id="star5" name="rating" value="5" style="display: none;" required /><label
+                        for="star5" style="cursor: pointer; color: #E7E5E4;">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" style="display: none;" /><label for="star4"
+                        style="cursor: pointer; color: #E7E5E4;">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" style="display: none;" /><label for="star3"
+                        style="cursor: pointer; color: #E7E5E4;">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" style="display: none;" /><label for="star2"
+                        style="cursor: pointer; color: #E7E5E4;">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" style="display: none;" /><label for="star1"
+                        style="cursor: pointer; color: #E7E5E4;">★</label>
+                </div>
+
+                <textarea name="comment" placeholder="리뷰를 남겨주세요! (최대 200자)" maxlength="200"></textarea>
+
+                <button type="submit" class="review-btn">제출</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        const reviewForm = document.querySelector('form');
+        const textarea = document.querySelector('textarea');
+
+        reviewForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const isConfirm = confirm("리뷰를 등록하시겠습니까?");
+
+            if (isConfirm) {
+                alert("리뷰가 등록되었습니다!");
+
+                textarea.value = "";
+
+                const checkedStar = document.querySelector('input[name="rating"]:checked');
+                if (checkedStar) checkedStar.checked = false;
+
+                reviewForm.submit();
+
+            }
+        });
+    </script>
+
+</body>
+
+</html>
