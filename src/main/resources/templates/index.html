@@ -127,7 +127,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
         .search-section {
             background: var(--bg-card);
             border: 1.5px solid var(--border);
-            border-radius: var(--radius);
+            border-radius: 20px;
             padding: 22px 28px;
             display: flex;
             align-items: center;
@@ -142,7 +142,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             display: flex;
             align-items: center;
             gap: 10px;
-            width: 350px;
+            width: 400px;
         }
 
         .search-field label {
@@ -150,6 +150,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             font-weight: 600;
             color: var(--text-sub);
             white-space: nowrap;
+            padding-left: 30px;
         }
 
         .search-field input {
@@ -326,25 +327,24 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             renderBooks(filtered);
         }
 
-        const isLoggedIn = true;
+        // const isLoggedIn = true;
 
-        // 2. 화면 로드 시 버튼 상태 제어
-        window.onload = function () {
-            const nav = document.querySelector('nav');
+        // window.onload = function () {
+        //     const nav = document.querySelector('nav');
 
-            if (isLoggedIn) {
-                // 로그인 된 상태일 때 보여줄 버튼
-                nav.innerHTML = `
-                <a href="/logout" class="btn-logout">로그아웃</a>
-                <a href="/mypage" class="btn-mypage">마이페이지</a>
-            `;
-            } else {
-                // 로그인 안 된 상태일 때 보여줄 버튼
-                nav.innerHTML = `
-                <a href="/login" class="btn-login">로그인</a>
-            `;
-            }
-        }
+        //     if (isLoggedIn) {
+        //         // 로그인 된 상태일 때 보여줄 버튼
+        //         nav.innerHTML = `
+        //         <a href="/logout" class="btn-logout">로그아웃</a>
+        //         <a href="/mypage" class="btn-mypage">마이페이지</a>
+        //     `;
+        //     } else {
+        //         // 로그인 안 된 상태일 때 보여줄 버튼
+        //         nav.innerHTML = `
+        //         <a href="/login" class="btn-login">로그인</a>
+        //     `;
+        //     }
+        // }
 
         // fetch('header_logo.html')
         //     .then(res => res.text())
