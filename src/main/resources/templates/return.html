@@ -127,8 +127,6 @@
             margin-bottom: 20px;
         }
 
-        .star-rating label {}
-
         textarea {
             width: 100%;
             height: 120px;
@@ -139,9 +137,11 @@
             border-radius: 10px;
         }
 
-        button {
+        .review-btn {
+            color: white;
             display: flex;
             margin: 0 auto;
+            border: none;
             border-radius: 10px;
             width: 80px;
             height: 30px;
@@ -150,6 +150,10 @@
             background-color: #F59E0B;
             cursor: pointer;
             font-size: 16px;
+        }
+
+        .review-btn:hover {
+            background-color: #D97706;
         }
 
         .star-rating input:checked~label {
@@ -194,7 +198,7 @@
 
                 <textarea name="comment" placeholder="리뷰를 남겨주세요! (최대 200자)" maxlength="200"></textarea>
 
-                <button type="submit">제출</button>
+                <button type="submit" class="review-btn">제출</button>
             </form>
         </div>
     </section>
@@ -216,9 +220,9 @@
                 const checkedStar = document.querySelector('input[name="rating"]:checked');
                 if (checkedStar) checkedStar.checked = false;
 
-                location.href = "mypage.html"
-
                 // reviewForm.submit();
+
+                location.href = "mypage.html"
             }
         });
     </script>
