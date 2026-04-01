@@ -314,44 +314,84 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
         </div>
     </section>
     <script>
+        // 1. 검색 버튼 클릭 시 실행되는 함수
         function searchBooks() {
             const titleQ = document.getElementById('input-title').value.trim().toLowerCase();
             const authorQ = document.getElementById('input-author').value.trim().toLowerCase();
 
-            const filtered = MOCK_BOOKS.filter(b => {
-                const matchTitle = !titleQ || b.title.toLowerCase().includes(titleQ);
-                const matchAuthor = !authorQ || b.author.toLowerCase().includes(authorQ);
-                return matchTitle && matchAuthor;
-            });
-
-            renderBooks(filtered);
+            // MOCK_BOOKS가 정의되어 있어야 작동합니다. 
+            // 만약 서버에서 데이터를 가져와 검색하고 싶다면 fetch를 사용해야 합니다.
+            if (typeof MOCK_BOOKS !== 'undefined') {
+                const filtered = MOCK_BOOKS.filter(b => {
+                    const matchTitle = !titleQ || b.title.toLowerCase().includes(titleQ);
+                    const matchAuthor = !authorQ || b.author.toLowerCase().includes(authorQ);
+                    return matchTitle && matchAuthor;
+                });
+                // 검색 결과를 인기도서 영역에 표시 (필요에 따라 변경 가능)
+                renderPopularBooks(filtered);
+            } else {
+                console.warn("MOCK_BOOKS 데이터가 없습니다.");
+            }
         }
 
-        // const isLoggedIn = true;
+        // 2. 페이지가 로드되자마자 실행되는 설정
+        window.onload = function () {
+            fetchPopularBooks();
+        };
 
-        // window.onload = function () {
-        //     const nav = document.querySelector('nav');
+        // 3. 서버에서 데이터를 가져와 인기도서(TOP 4) 정렬 후 출력
+        async function fetchPopularBooks() {
+            try {
+                // 스프링 부트 서버의 전체 도서 API 호출
+                const response = await fetch('http://localhost:8080/api/books/all');
 
-        //     if (isLoggedIn) {
-        //         // 로그인 된 상태일 때 보여줄 버튼
-        //         nav.innerHTML = `
-        //         <a href="/logout" class="btn-logout">로그아웃</a>
-        //         <a href="/mypage" class="btn-mypage">마이페이지</a>
-        //     `;
-        //     } else {
-        //         // 로그인 안 된 상태일 때 보여줄 버튼
-        //         nav.innerHTML = `
-        //         <a href="/login" class="btn-login">로그인</a>
-        //     `;
-        //     }
-        // }
+                if (!response.ok) throw new Error("서버 연결 실패");
 
-        // fetch('header_logo.html')
-        //     .then(res => res.text())
-        //     .then(html => {
-        //         document.getElementById('header-container').innerHTML = html;
-        //     })
+                let books = await response.json();
 
+                // 대출 횟수(rentalHitCount)가 높은 순으로 정렬 (Desc)
+                // 데이터가 없는 경우를 대비해 || 0 처리
+                books.sort((a, b) => (b.rentalHitCount || 0) - (a.rentalHitCount || 0));
+
+                // 상위 4개만 추출
+                const popularBooks = books.slice(0, 4);
+
+                // 화면에 그리기
+                renderPopularBooks(popularBooks);
+            } catch (error) {
+                console.error("데이터 로드 중 오류 발생:", error);
+                // 에러 시 사용자에게 알림을 주거나 기본 메시지 출력 가능
+            }
+        }
+
+        // 4. 데이터를 받아 HTML 카드로 만들어 화면에 주입(Injection)하는 함수
+        function renderPopularBooks(books) {
+            const container = document.querySelector('.popular-book');
+            if (!container) return;
+
+            container.innerHTML = ''; // 기존의 정적(가짜) 데이터 비우기
+
+            if (books.length === 0) {
+                container.innerHTML = '<p>표시할 도서가 없습니다.</p>';
+                return;
+            }
+
+            books.forEach(book => {
+                const bookHtml = `
+                <a href="/book/detail/${book.bookId}">
+                    <div>
+                        <img src="${book.imageUrl || 'https://via.placeholder.com/150'}" alt="도서 이미지">
+                    </div>
+                    <div class="book-info">
+                        <p><strong>${book.title}</strong></p>
+                        <p>${book.author}</p>
+                        <p style="font-size: 12px; color: #78716C;">대출 횟수: ${book.rentalHitCount || 0}회</p>
+                    </div>
+                </a>
+            `;
+                container.insertAdjacentHTML('beforeend', bookHtml);
+            });
+        }
     </script>
 </body>
 

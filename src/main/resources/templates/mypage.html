@@ -273,10 +273,11 @@
 
     </section>
     <script>
-        const returnBtn = document.querySelector('#return-button')
+        const returnBtn = document.querySelector('#return-button');
 
         returnBtn.addEventListener('click', function () {
-            const selectedBooks = document.querySelectorAll('input[name="bookSelect"]:checked')
+            // 1. 체크된 모든 체크박스들을 가져옵니다.
+            const selectedBooks = document.querySelectorAll('input[name="bookSelect"]:checked');
 
             if (selectedBooks.length === 0) {
                 alert("반납할 책을 선택해 주세요!");
@@ -284,17 +285,31 @@
             }
 
             if (confirm("도서를 반납하시겠습니까?")) {
-                // 새 주소 규칙: /api/loans/return/{bookId}
-                // 만약 별점 기능을 아직 안 만드셨다면 주소만 아래처럼 바꿉니다.
-                fetch(`http://localhost:8080/api/loans/return/${bookId}`, {
-                    method: 'POST'
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert("반납 완료! (대출 권수가 차감되었습니다)");
-                            location = "return.html";
-                        }
-                    });
+                const total = selectedBooks.length; // 내가 체크한 책이 총 몇 권인지?
+                let completedCount = 0; // 성공적으로 처리된 책의 개수
+
+                selectedBooks.forEach(book => {
+                    const id = book.value;
+
+                    fetch(`http://localhost:8080/api/loans/return/${id}`, {
+                        method: 'POST'
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                completedCount++; // 한 권 성공할 때마다 1씩 더하기
+
+                                // [핵심] 성공한 개수가 내가 체크한 총 개수랑 같아지면?
+                                if (completedCount === total) {
+                                    alert("모든 도서가 성공적으로 반납되었습니다.");
+                                    window.location.href = "return.html"; // 그때서야 이동!
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error("연동 에러:", err);
+                            alert("일부 도서 반납 중 오류가 발생했습니다.");
+                        });
+                });
             }
         });
     </script>
