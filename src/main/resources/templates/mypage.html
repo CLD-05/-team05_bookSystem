@@ -190,6 +190,20 @@
             text-align: center;
             font-size: 18px;
         }
+
+        #return-button {
+            background-color: #F59E0B;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 80px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        #return-button:hover {
+            background-color: #D97706;
+        }
     </style>
 </head>
 
@@ -236,8 +250,7 @@
         </div>
 
         <div style="margin-top: 10px;">
-            <button type="button" id="return-button"
-                style="background-color: #F59E0B; border: none; border-radius: 5px; width: 80px; height: 30px; cursor: pointer;">반납하기</button>
+            <button type="button" id="return-button">반납하기</button>
         </div>
 
         <br>
@@ -263,7 +276,7 @@
         const returnBtn = document.querySelector('#return-button')
 
         returnBtn.addEventListener('click', function () {
-            const selectedBooks = document.querySelectorAll('input[name="bookSelect"]')
+            const selectedBooks = document.querySelectorAll('input[name="bookSelect"]:checked')
 
             if (selectedBooks.length === 0) {
                 alert("반납할 책을 선택해 주세요!");
