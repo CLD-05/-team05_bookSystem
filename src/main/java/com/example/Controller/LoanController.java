@@ -18,15 +18,14 @@ import java.util.List;
 public class LoanController {
 
     private final LoanService loanService;
-    private final BookRepository bookRepository;
+    private final BookRepository bookRepository; // 1. 선언이 빠져있어서 추가했습니다.
 
     /**
      * 1. 도서 대출 신청
-     * POST /api/loans/borrow/{bookId}
      */
     @PostMapping("/borrow/{bookId}")
     public ResponseEntity<String> borrowBook(@PathVariable Integer bookId, HttpSession session) {
-        String userId = (String) session.getAttribute("loggedInUser"); // 세션에서 ID 추출
+        String userId = (String) session.getAttribute("loggedInUser");
         if (userId == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
 
         try {
@@ -39,7 +38,6 @@ public class LoanController {
 
     /**
      * 2. 도서 반납 및 리뷰 등록
-     * POST /api/loans/return/{bookId}
      */
     @PostMapping("/return/{bookId}")
     public ResponseEntity<String> returnBook(
@@ -56,7 +54,6 @@ public class LoanController {
 
     /**
      * [기능 1] 특정 도서의 리뷰 목록 조회
-     * GET /api/loans/book/{bookId}/reviews
      */
     @GetMapping("/book/{bookId}/reviews")
     public ResponseEntity<List<ReviewResponseDto>> getBookReviews(@PathVariable Integer bookId) {
@@ -65,7 +62,6 @@ public class LoanController {
 
     /**
      * [기능 2] 나의 현재 대출 현황 조회 (마이페이지용)
-     * GET /api/loans/my-loans
      */
     @GetMapping("/my-loans")
     public ResponseEntity<List<LoanEntity>> getMyLoans(HttpSession session) {
@@ -74,13 +70,13 @@ public class LoanController {
 
         return ResponseEntity.ok(loanService.getMyCurrentLoans(userId));
     }
+
     /**
      * [기능 3] 평점 상위 5위 도서 조회 (TOP 5)
-     * GET /api/loans/top5
      */
     @GetMapping("/top5")
     public ResponseEntity<List<BookEntity>> getTop5Books() {
-        // 평점이 아닌 대여 횟수(RentalHitCount) 순으로 상위 5개를 가져옵니다.
-        return ResponseEntity.ok(bookRepository.findTop5ByOrderByRentalHitCountDescAvgRatingDesc());
+        // Repository의 3번 메서드 호출 + "DELETED" 인자 전달
+        return ResponseEntity.ok(bookRepository.findTop5ByStatusNotOrderByRentalHitCountDescAvgRatingDesc("DELETED"));
     }
-}
+} // 2. 클래스를 닫는 이 중괄호가 없어서 에러가 났던 것입니다!
