@@ -21,4 +21,17 @@ public class BookController {
         List<BookEntity> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);
     }
+    // 제목 검색 API
+    @GetMapping("/search/title")
+    public ResponseEntity<List<BookEntity>> searchByTitle(@RequestParam String keyword) {
+        List<BookEntity> books = bookService.searchByTitle(keyword);
+        return ResponseEntity.ok(books);
+    }
+
+    // 저자 검색 API
+    @GetMapping("/search/author")
+    public ResponseEntity<List<BookEntity>> searchByAuthor(@RequestParam String keyword) {
+        List<BookEntity> books = bookService.searchByAuthor(keyword);
+        return ResponseEntity.ok(books);
+    }
 }

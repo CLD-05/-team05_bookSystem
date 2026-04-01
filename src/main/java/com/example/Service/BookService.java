@@ -28,4 +28,15 @@ public class BookService {
     public List<BookEntity> getAllBooks() {
         return bookRepository.findAll();
     }
+    // 제목으로 검색
+    @Transactional(readOnly = true)
+    public List<BookEntity> searchByTitle(String title) {
+        return bookRepository.findByTitleContaining(title);
+    }
+
+    // 저자로 검색
+    @Transactional(readOnly = true)
+    public List<BookEntity> searchByAuthor(String author) {
+        return bookRepository.findByAuthorContaining(author);
+    }
 }

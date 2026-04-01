@@ -2,9 +2,13 @@ package com.example.Repository;
 
 import com.example.Entity.BookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
 public interface BookRepository extends JpaRepository<BookEntity, Integer> {
-    // 기본 CRUD(저장, 삭제, 조회) 기능을 상속받습니다.
+
+    // 1. 제목으로 검색 (키워드 포함)
+    List<BookEntity> findByTitleContaining(String title);
+
+    // 2. 저자로 검색 (키워드 포함)
+    List<BookEntity> findByAuthorContaining(String author);
 }
