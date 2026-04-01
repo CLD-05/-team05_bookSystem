@@ -18,7 +18,7 @@ import java.util.List;
 public class LoanController {
 
     private final LoanService loanService;
-    private final BookRepository bookRepository; // 1. 선언이 빠져있어서 추가했습니다.
+    private final BookRepository bookRepository;
 
     /**
      * 1. 도서 대출 신청
@@ -29,8 +29,7 @@ public class LoanController {
         if (userId == null) return ResponseEntity.status(401).body("로그인이 필요합니다.");
 
         try {
-            String result = loanService.borrowBook(userId, bookId);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(loanService.borrowBook(userId, bookId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -45,15 +44,14 @@ public class LoanController {
             @RequestParam(required = false) Double rating,
             @RequestParam(required = false) String reviewContent) {
         try {
-            String result = loanService.returnBook(bookId, rating, reviewContent);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(loanService.returnBook(bookId, rating, reviewContent));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     /**
-     * [기능 1] 특정 도서의 리뷰 목록 조회
+     * [조회 1] 특정 도서의 리뷰 목록 조회
      */
     @GetMapping("/book/{bookId}/reviews")
     public ResponseEntity<List<ReviewResponseDto>> getBookReviews(@PathVariable Integer bookId) {
@@ -61,7 +59,7 @@ public class LoanController {
     }
 
     /**
-     * [기능 2] 나의 현재 대출 현황 조회 (마이페이지용)
+     * [조회 2] 나의 현재 대출 현황 (미반납 건)
      */
     @GetMapping("/my-loans")
     public ResponseEntity<List<LoanEntity>> getMyLoans(HttpSession session) {
@@ -72,11 +70,30 @@ public class LoanController {
     }
 
     /**
-     * [기능 3] 평점 상위 5위 도서 조회 (TOP 5)
+     * [조회 3] 나의 전체 대출 이력 (반납 완료 포함)
+     */
+    @GetMapping("/my-history")
+    public ResponseEntity<List<LoanEntity>> getMyHistory(HttpSession session) {
+        String userId = (String) session.getAttribute("loggedInUser");
+        if (userId == null) return ResponseEntity.status(401).build();
+
+        return ResponseEntity.ok(loanService.getMyTotalHistory(userId));
+    }
+
+    /**
+     * [조회 4] 평점/대여순 상위 5위 도서 (TOP 5)
      */
     @GetMapping("/top5")
     public ResponseEntity<List<BookEntity>> getTop5Books() {
-        // Repository의 3번 메서드 호출 + "DELETED" 인자 전달
         return ResponseEntity.ok(bookRepository.findTop5ByStatusNotOrderByRentalHitCountDescAvgRatingDesc("DELETED"));
     }
-} // 2. 클래스를 닫는 이 중괄호가 없어서 에러가 났던 것입니다!
+
+    /**
+     * [관리자용] 특정 유저의 대출 이력 상세 조회
+     */
+    @GetMapping("/admin/user/{userId}/history")
+    public ResponseEntity<List<LoanEntity>> getUserHistoryForAdmin(@PathVariable String userId) {
+        // 관리자가 유저 관리 페이지에서 특정 유저 클릭 시 호출
+        return ResponseEntity.ok(loanService.getUserHistoryForAdmin(userId));
+    }
+}
