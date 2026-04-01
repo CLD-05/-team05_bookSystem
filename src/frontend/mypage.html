@@ -106,7 +106,7 @@
 
         section {
             text-align: center;
-            padding-top: 40px;
+            padding-top: 20px;
             margin-top: 0 auto;
         }
 
@@ -129,7 +129,7 @@
             border: solid 2px;
             border-radius: 20px;
             width: 600px;
-            height: 240px;
+            height: 180px;
             margin: 0 auto;
             overflow: hidden;
         }
@@ -151,6 +151,45 @@
         }
 
         .rent-row span {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .btn-delete {
+            color: gray;
+            text-decoration: none;
+        }
+
+        .all-rent-info {
+            display: flex;
+            flex-direction: column;
+            border: solid 2px;
+            border-radius: 20px;
+            width: 600px;
+            /* height: 240px; */
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .all-rent-header {
+            display: flex;
+            justify-content: space-around;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 2px solid var(--border);
+            background-color: darkgray;
+        }
+
+        .all-rent-row {
+            display: flex;
+            padding: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .all-rent-row span {
             flex: 1;
             text-align: center;
             font-size: 18px;
@@ -185,17 +224,41 @@
             (남은 권수 [[${user.current_rental_count}]] / [[${user.max_rental_limit}]])</h4>
         <div class="rent-info">
             <div class="rent-header">
-                <span><strong>책제목</strong></span>
+                <span><strong>책 제목</strong></span>
                 <span><strong>저자명</strong></span>
                 <span><strong>대여일</strong></span>
                 <span><strong>반납일</strong></span>
             </div>
             <div class="rent-row" th:each="book : ${rentedBooks}">
-                <span th:text="${book.title}">책제목</span>
-                <span th:text="${book.author}">저자명</span>
-                <span th:text="${book.loan_Date}">2026-03-25</span>
-                <span th:text="${book.return_Date}">2026-04-01</span>
+                <span th:text="${book.title}">#책 제목</span>
+                <span th:text="${book.author}">#저자명</span>
+                <span th:text="${book.loan_Date}">#2026-03-25</span>
+                <span th:text="${book.return_Date}">#2026-04-01</span>
             </div>
+        </div>
+
+        <br>
+
+        <h4 th:inline="text" style="margin-right: 450px; margin-bottom: 10px;">지금까지 빌린 책 목록</h4>
+        <div class="all-rent-info">
+            <div class="all-rent-header">
+                <span>책 제목</span>
+                <span>저자명</span>
+                <span>대여일</span>
+                <span>반납일</span>
+            </div>
+            <div class="all-rent-row" th:each="history : ${allRentalHistory}">
+                <span th:text="${history.title}">#책 제목</span>
+                <span th:text="${history.author}">#저자명</span>
+                <span th:text="${history.loan_Date}">#대여일</span>
+                <span th:text="${history.return_Date}">#반납일</span>
+            </div>
+        </div>
+
+        <div class="account-actions" style="padding-top: 20px;">
+            <a href="/user/delete" class="btn-delete" onclick="return confirm('정말 탈퇴하시겠습니까? 대여 중인 도서 정보가 모두 삭제됩니다.');">
+                회원 탈퇴
+            </a>
         </div>
     </section>
 </body>
