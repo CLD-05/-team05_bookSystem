@@ -283,14 +283,20 @@
                 return;
             }
 
-
-
-            const isConfirm = confirm("선택한 도서를 반납하시겠습니까?");
-
-            if (isConfirm) {
-                location.href = "return.html";
+            if (confirm("도서를 반납하시겠습니까?")) {
+                // 새 주소 규칙: /api/loans/return/{bookId}
+                // 만약 별점 기능을 아직 안 만드셨다면 주소만 아래처럼 바꿉니다.
+                fetch(`http://localhost:8080/api/loans/return/${bookId}`, {
+                    method: 'POST'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("반납 완료! (대출 권수가 차감되었습니다)");
+                            location = "return.html";
+                        }
+                    });
             }
-        })
+        });
     </script>
 </body>
 
