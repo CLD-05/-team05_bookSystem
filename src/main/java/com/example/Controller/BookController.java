@@ -9,18 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/books") // 유저용 경로는 /api/books로 잡을게요
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
 
-    // 모든 책 리스트 가져오기
-    @GetMapping
+    // 모든 책 리스트 가져오기 (경로에 /all 유지)
+    @GetMapping("/all")
     public ResponseEntity<List<BookEntity>> getAllBooks() {
         List<BookEntity> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);
     }
+
     // 제목 검색 API
     @GetMapping("/search/title")
     public ResponseEntity<List<BookEntity>> searchByTitle(@RequestParam String keyword) {

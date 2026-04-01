@@ -1,5 +1,6 @@
 package com.example.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,12 +9,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Persistable; // 추가됨
 
 import java.time.LocalDateTime;
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "users")
 @Getter @Setter @NoArgsConstructor
 // Persistable 인터페이스를 구현해야 문자열 ID를 직접 넣을 때 에러가 안 납니다.
 public class UserEntity implements Persistable<String> {
+
+    @Column(nullable = false)
+    private String role = "USER"; // 기본값 설정
 
     @Id
     // @GeneratedValue 줄을 삭제했습니다. 직접 ID를 입력받기 때문입니다.
@@ -29,7 +33,6 @@ public class UserEntity implements Persistable<String> {
     @Column(length = 100, nullable = false)
     private String nickname;
 
-    private String role = "USER";
 
     @Column(name = "max_rental_limit")
     private Integer maxRentalLimit = 3;

@@ -20,33 +20,40 @@ public class UserService {
     public void signUp(SignUpDto dto) {
         UserEntity user = new UserEntity();
         user.setUserId(dto.getUserId());
-        user.setPassword(dto.getPassword()); // 실제론 암호화(BCrypt) 권장
+        user.setPassword(dto.getPassword());
         user.setEmail(dto.getEmail());
         user.setNickname(dto.getNickname());
+        user.setRole("USER"); // 기본 권한 설정
         userRepository.save(user);
     }
 
-    // 2. 로그인 (아이디 + 비번 일치 확인)
+    // 2. 로그인 (어드민/유저 공용)
     public UserEntity login(LoginDto dto) {
         return userRepository.findByUserId(dto.getUserId())
                 .filter(u -> u.getPassword().equals(dto.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 틀립니다."));
     }
 
-    // 아이디 찾기: 이메일과 닉네임이 모두 일치하는 유저의 ID를 반환
+    // 3. 아이디 찾기 (일반 유저만 가능하도록 필터링)
     public String findId(LookUpDto dto) {
-        return userRepository.findByEmailAndNickname(dto.getEmail(), dto.getNickname())
-                .map(UserEntity::getUserId) // 찾았다면 userId만 꺼냄
-                .orElseThrow(() -> new IllegalArgumentException("입력하신 정보와 일치하는 아이디가 없습니다."));
+        return userRepository.findByEmailAndNicknameAndRole(dto.getEmail(), dto.getNickname(), "USER")
+                .map(UserEntity::getUserId)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 일반 사용자 정보가 없습니다."));
     }
 
-    // 비밀번호 재설정: 이메일과 아이디가 일치하는 유저를 찾아 비번 변경
+    // 4. 비밀번호 재설정 (어드민 차단 로직 포함)
     @Transactional
     public void resetPassword(LookUpDto dto) {
         UserEntity user = userRepository.findByEmailAndUserId(dto.getEmail(), dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 이메일 정보가 잘못되었습니다."));
 
-        // 새 비밀번호로 업데이트
+        // 관리자 권한이면 즉시 에러 발생
+        if ("ADMIN".equals(user.getRole())) {
+            throw new IllegalArgumentException("관리자 계정은 보안상 직접 재설정이 불가합니다. 시스템 관리자에게 문의하세요.");
+        }
+
+        // 일반 유저만 비번 변경 진행
         user.setPassword(dto.getNewPassword());
+        userRepository.save(user);
     }
 }

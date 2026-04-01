@@ -13,4 +13,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     // 서비스에서 호출하는 이름과 똑같이 맞춤 (이메일 + 아이디)
     Optional<UserEntity> findByEmailAndUserId(String email, String userId);
+
+    // 애초에 권한이 'USER'인 데이터 중에서만 이메일/닉네임을 검색
+    Optional<UserEntity> findByEmailAndNicknameAndRole(String email, String nickname, String role);
 }
