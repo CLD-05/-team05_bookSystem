@@ -128,7 +128,7 @@
         .rent-info {
             border: solid 2px;
             border-radius: 20px;
-            width: 600px;
+            width: 700px;
             min-height: 180px;
             margin: 0 auto;
             overflow: auto;
@@ -166,7 +166,7 @@
             flex-direction: column;
             border: solid 2px;
             border-radius: 20px;
-            width: 600px;
+            width: 700px;
             height: 240px;
             margin: 0 auto;
             overflow: auto;
@@ -220,7 +220,7 @@
 
         <br>
 
-        <h4 th:inline="text" style="margin-right: 450px; margin-bottom: 10px;">대여 상태
+        <h4 th:inline="text" style="margin-right: 500px; margin-bottom: 10px;">대여 상태
             (남은 권수 [[${user.current_rental_count}]] / [[${user.max_rental_limit}]])</h4>
         <div class="rent-info">
             <div class="rent-header">
@@ -228,18 +228,25 @@
                 <span><strong>저자명</strong></span>
                 <span><strong>대여일</strong></span>
                 <span><strong>반납일</strong></span>
+                <span><strong>반납체크</strong></span>
             </div>
             <div class="rent-row" th:each="book : ${rentedBooks}">
                 <span th:text="${book.title}">#책 제목</span>
                 <span th:text="${book.author}">#저자명</span>
                 <span th:text="${book.loan_Date}">#2026-03-25</span>
                 <span th:text="${book.return_Date}">#2026-04-01</span>
+                <span><input type="checkbox" name="bookSelect" th:value="${book.id}"></span>
             </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+            <button type="button" id="return-button"
+                style="background-color: #F59E0B; border: none; border-radius: 5px; width: 80px; height: 30px; cursor: pointer;">반납하기</button>
         </div>
 
         <br>
 
-        <h4 th:inline="text" style="margin-right: 450px; margin-bottom: 10px;">지금까지 빌린 책 목록</h4>
+        <h4 th:inline="text" style="margin-right: 500px; margin-bottom: 10px;">지금까지 빌린 책 목록</h4>
         <div class="all-rent-info">
             <div class="all-rent-header">
                 <span>책 제목</span>
@@ -261,6 +268,24 @@
             </a>
         </div>
     </section>
+    <script>
+        const returnBtn = document.querySelector('#return-button')
+
+        returnBtn.addEventListener('click', function () {
+            const selectedBooks = document.querySelectorAll('input[name="bookSelect"]')
+
+            if (selectedBooks.length === 0) {
+                alert("반납할 책을 선택해 주세요!");
+                return;
+            }
+
+            const isConfirm = confirm("선택한 도서를 반납하시겠습니까?");
+
+            if (isConfirm) {
+                location.href = "return.html";
+            }
+        })
+    </script>
 </body>
 
 </html>

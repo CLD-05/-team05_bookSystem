@@ -164,6 +164,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             gap: 30px;
             flex-wrap: wrap;
             padding: 40px;
+            gap: 100px;
         }
 
         .popular-book a {
@@ -171,7 +172,8 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             justify-content: center;
             flex-wrap: wrap;
             flex-direction: column;
-            padding: 20px;
+            /* padding-left: 40px;
+            padding-right: 40px; */
             text-decoration: none;
         }
 
@@ -213,8 +215,8 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             </form>
         </div>
     </main>
-    <section>
-        <h2 style="margin-left: 100px;">인기도서</h2>
+    <section style="max-width: 1200px; margin: 0 auto;">
+        <h2>인기도서</h2>
         <div class="popular-book">
             <a th:each="book, stat : ${books}" th:if="${stat.index < 4}" th:href="@{/book/detail/{id}(id=${book.id})}">
                 <div>
