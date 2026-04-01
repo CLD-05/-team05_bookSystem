@@ -129,9 +129,9 @@
             border: solid 2px;
             border-radius: 20px;
             width: 600px;
-            height: 180px;
+            min-height: 180px;
             margin: 0 auto;
-            overflow: hidden;
+            overflow: auto;
         }
 
         .rent-header {
@@ -167,9 +167,9 @@
             border: solid 2px;
             border-radius: 20px;
             width: 600px;
-            /* height: 240px; */
+            height: 240px;
             margin: 0 auto;
-            overflow: hidden;
+            overflow: auto;
         }
 
         .all-rent-header {
@@ -199,13 +199,13 @@
 
 <body>
     <header>
-        <a class="logo" href="index.html">
+        <a class="logo" th:href="@{/}">
             <span class="logo-icon">📚</span>
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
             <a href="/logout" class="btn-logout">로그아웃</a>
-            <a href="mypage.html" class="btn-mypage">마이페이지</a>
+            <a th:href="@{/mypage}" class="btn-mypage">마이페이지</a>
         </nav>
     </header>
 

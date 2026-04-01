@@ -151,12 +151,10 @@
             font-size: 16px;
         }
 
-        /* 1. 클릭(체크)된 별과 그 '코드상 뒤에 있는' 모든 별을 주황색으로! */
         .star-rating input:checked~label {
             color: #F59E0B !important;
         }
 
-        /* 2. 마우스를 올렸을 때도 미리보기로 색이 변하게 하고 싶다면 추가 (선택사항) */
         .star-rating label:hover,
         .star-rating label:hover~label {
             color: #F59E0B !important;
@@ -166,13 +164,13 @@
 
 <body>
     <header>
-        <a class="logo" href="index.html">
+        <a class="logo" th:href="@{/}">
             <span class="logo-icon">📚</span>
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
             <a href="/logout" class="btn-logout">로그아웃</a>
-            <a href="mypage.html" class="btn-mypage">마이페이지</a>
+            <a th:href="@{/mypage}" class="btn-mypage">마이페이지</a>
         </nav>
     </header>
     <section style="display: flex; justify-content: center; align-items: center; margin: 0 auto; padding-top: 150px;">
@@ -199,6 +197,28 @@
             </form>
         </div>
     </section>
+
+    <script>
+        const reviewForm = document.querySelector('form');
+        const textarea = document.querySelector('textarea');
+
+        reviewForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const isConfirm = confirm("리뷰를 등록하시겠습니까?");
+
+            if (isConfirm) {
+                alert("리뷰가 등록되었습니다!");
+
+                textarea.value = "";
+
+                const checkedStar = document.querySelector('input[name="rating"]:checked');
+                if (checkedStar) checkedStar.checked = false;
+
+                // reviewForm.submit();
+            }
+        });
+    </script>
 
 </body>
 
