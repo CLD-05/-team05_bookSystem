@@ -72,5 +72,10 @@ public class MainController {
         return "book_search"; // 이 파일이 열리면서 데이터가 전달됩니다.
     }
     
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login"; 
+    }
+    
     
 }
