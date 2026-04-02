@@ -134,7 +134,6 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             gap: 20px;
             flex-wrap: wrap;
             box-shadow: var(--shadow-sm);
-            margin-bottom: 32px;
             width: 65%;
         }
 
@@ -207,7 +206,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             justify-content: center;
             gap: 30px;
             flex-wrap: wrap;
-            padding: 40px;
+            padding: 20px;
             gap: 100px;
         }
 
@@ -228,8 +227,51 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
 
         .popular-book img {
             border-radius: 8px;
-            width: 150px;
-            height: 200px;
+            width: 100px;
+            height: 150px;
+        }
+
+        .book-list-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 85%;
+            margin: 30px auto;
+            border: none;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            /* 너무 둥근 것보다 12px 정도가 적당해요 */
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* 살짝 그림자를 주면 입체감이 살아요 */
+            text-align: center;
+        }
+
+        .book-list-table th {
+            background-color: #f1f3f5;
+            color: #333;
+            padding: 15px;
+            font-size: 1.1rem;
+
+        }
+
+        .book-list-table td {
+            padding: 12px;
+            color: #555;
+            border-bottom: 1px solid #f1f1f1;
+            /* 세로줄 대신 연한 가로줄 */
+        }
+
+        /* 마지막 줄은 가로줄을 없애서 깔끔하게 마무리 */
+        .book-list-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .book-list-table thead tr:first-child th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .book-list-table thead tr:first-child th:last-child {
+            border-top-right-radius: 12px;
         }
     </style>
 </head>
@@ -263,8 +305,8 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             <button class="btn-search" onclick="searchBooks()">검색</button>
         </div>
     </main>
-    <section style="max-width: 1200px; margin: 0 auto;">
-        <h2>인기도서</h2>
+    <section style="margin: 0 auto;">
+        <h2 style="margin-left: 200px;">인기도서</h2>
         <div class="popular-book">
             <a th:each="book, stat : ${books}" th:if="${stat.index < 4}" th:href="@{/book/detail/{id}(id=${book.id})}">
                 <div>
@@ -288,31 +330,31 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
                 </div>
             </a>
 
-            <a href="book_detail.html">
-                <div>
-                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
-                </div>
-                <div class="book-info">
-                    <p>책 제목</p>
-                    <p>저자</p>
-                    <p>한줄 설명</p>
-                </div>
-            </a>
 
-            <a href="book_detail.html">
-                <div>
-                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
-                </div>
-                <div class="book-info">
-                    <p>책 제목</p>
-                    <p>저자</p>
-                    <p>한줄 설명</p>
-                </div>
-            </a>
-
-
+            <hr>
         </div>
     </section>
+
+    <h2 style="margin-left: 200px;">📚 전체 도서 목록</h2>
+    <div class="book-list-container">
+        <table border="1" class="book-list-table">
+            <thead>
+                <tr>
+                    <th>제목</th>
+                    <th>저자</th>
+                    <th>한줄 설명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each=" book : ${allBooks}">
+                    <td th:text="${book.title}">제목</td>
+                    <td th:text="${book.author}">저자</td>
+                    <td th:text="${book.description}">한줄 설명</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <script>
         // 1. 검색 버튼 클릭 시 실행되는 함수
         function searchBooks() {
