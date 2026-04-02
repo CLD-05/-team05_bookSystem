@@ -263,14 +263,13 @@
 
       <!-- User List (Server-side rendering) -->
       <div class="user-list-box" id="user-list">
-        <div th:each="user, stat : ${userLoans}" class="user-row" th:style="'animation-delay: ' + (${stat.index} * 0.04) + 's'">
-          <span th:text="${user.nickname}">닉네임</span>
-          <span th:text="(${user.currentRentalCount ?: 0}) + '권'">0권</span>
-          <span style="text-align:left;font-size:13px;" th:text="${user.books ?: '-'}">대여한 책 제목</span>
-          <span th:text="${user.rentDate ?: '-'}">대여일</span>
-          <span th:text="${user.returnDate ?: '-'}">반납일</span>
-          <span th:class="${user.overdue != null && user.overdue > 0 ? 'overdue' : ''}" 
-                th:text="${user.overdue != null && user.overdue > 0 ? user.overdue + '일' : '-'}">-</span>
+        <div th:each="loan, stat : ${userLoans}" class="user-row" th:style="'animation-delay: ' + (${stat.index} * 0.04) + 's'">
+          <span th:text="${loan.user.nickname}">닉네임</span>
+          <span th:text="(${loan.user.currentRentalCount ?: 0}) + '권'">0권</span>
+          <span style="text-align:left;font-size:13px;" th:text="${loan.book.title ?: '-'}">대여한 책 제목</span>
+          <span th:text="${#temporals.format(loan.loanDate, 'yyyy-MM-dd') ?: '-'}">대여일</span>
+          <span th:text="${#temporals.format(loan.returnDate, 'yyyy-MM-dd') ?: '-'}">반납일</span>
+          <span th:text="'-'">-</span>
         </div>
         <div th:if="${#lists.isEmpty(userLoans)}" class="empty-state">대여 현황이 없습니다.</div>
       </div>

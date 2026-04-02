@@ -4,184 +4,429 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도서 상세 정보</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
-        body { background-color: #fff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* 1. 상단 헤더: 요청 이미지와 흡사한 라인아트 책 아이콘 (가로줄 제거) */
-        .header-nav { padding: 15px 30px; /* border-bottom 제거 */ }
+        :root {
+            --primary: #F59E0B;
+            --primary-dark: #D97706;
+            --primary-light: #FEF3C7;
+            --bg: #FAFAF8;
+            --card: #FFFFFF;
+            --text: #1C1917;
+            --text-sub: #44403C;
+            --text-muted: #78716C;
+            --border: #E7E5E4;
+            --star: #F59E0B;
+            --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.10);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        /* ── Header ── */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            background: #FFFFFF;
+            border-bottom: 1.5px solid var(--border);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-icon { font-size: 28px; line-height: 1; }
+        .logo-text { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+        header nav { display: flex; align-items: center; gap: 6px; }
+        header nav a {
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            color: var(--text-muted); padding: 7px 16px; border-radius: 8px;
+            transition: background 0.18s, color 0.18s;
+        }
+        header nav a:hover { background: #F5F5F4; color: var(--text); }
+        header nav a.btn-logout { border: 1.5px solid var(--border); }
+        header nav a.btn-mypage { border: 1.5px solid var(--border); }
+        .header-nav {
+            padding: 16px 40px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
         .home-btn {
             cursor: pointer;
             text-decoration: none;
-            color: #000;
+            color: var(--text);
             display: inline-flex;
             align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: color 0.18s;
         }
 
-        .detail-container { max-width: 900px; margin: 10px auto; padding: 10px; }
+        .home-btn:hover { color: var(--primary); }
 
-        /* 공통 회색 박스 규격: #FAF9F7 & 라운드 20px */
-        .gray-box {
-            background-color: #FAF9F7;
-            border-radius: 20px;
+        /* ── Main Container ── */
+        .detail-container {
+            max-width: 860px;
+            margin: 36px auto;
+            padding: 0 24px 60px;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* 이미지가 박스를 튀어나오지 않게 */
+            gap: 24px;
         }
 
-        /* 2. 상단 정보 영역 최적화 (초소형 레이아웃) */
-        .book-top-section { height: 180px; } /* 전체 높이를 180px로 대폭 축소 */
+        /* ── Book Top Section ── */
+        .book-top-section {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            gap: 0;
+            overflow: hidden;
+            min-height: 220px;
+        }
+
+        /* Book Cover */
         .book-cover {
-            width: 100%;
-            height: 100%; /* 부모 박스 높이에 맞춤 */
+            width: 150px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-size: 48px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to right, rgba(0,0,0,0.08), transparent);
+        }
+
         .book-cover img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        /* 3. 우측 설명 박스 (세로만 슬림하게 조정) */
+        /* Book Info */
         .book-info-box {
-            height: 100%; /* 이미지 높이에 맞춤 */
-            padding: 20px 25px; /* 패딩을 줄여 공간 확보 */
-            justify-content: flex-start;
-        }
-        .book-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 2px; }
-        .book-author { font-size: 1.05rem; color: #444; margin-bottom: 10px; }
-        .book-short-desc { font-size: 0.95rem; line-height: 1.4; color: #333; }
-
-        /* 하단 리뷰 영역: 내부 스크롤 적용 */
-        .review-section { margin-top: 25px; }
-        .avg-rating { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; }
-        .avg-rating .star { color: #FFAC4D; margin-right: 5px; }
-
-        .review-box {
-            width: 100%;
-            padding: 20px;
-            display: block;
-            overflow-y: hidden;
+            flex: 1;
+            padding: 28px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
         }
 
-        /* 리뷰 컨텐츠 컨테이너 (여기에 스크롤 적용) */
+        .book-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            width: fit-content;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .book-status-badge.available { background: #D1FAE5; color: #065F46; }
+        .book-status-badge.rented    { background: #FEE2E2; color: #991B1B; }
+
+        .book-title {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .book-author {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .book-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+            margin: 4px 0;
+        }
+
+        .book-short-desc {
+            font-size: 0.93rem;
+            line-height: 1.7;
+            color: var(--text-sub);
+        }
+
+        /* ── Rating Summary ── */
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .rating-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .rating-stars {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stars-row { color: var(--star); font-size: 18px; letter-spacing: 1px; }
+
+        .rating-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ── Review Section ── */
+        .review-section {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .review-section-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-section-header .icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
         .review-content {
-            max-height: 270px; /* 리뷰 3개 높이로 제한 */
-            overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 8px 0;
         }
 
-        /* 스크롤바 스타일 커스터마이징 (깔끔하게) */
-        .review-content::-webkit-scrollbar { width: 8px; }
-        .review-content::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 4px; }
-        .review-content::-webkit-scrollbar-track { background-color: rgba(0,0,0,0.05); }
+        .review-content::-webkit-scrollbar { width: 6px; }
+        .review-content::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 10px; }
+        .review-content::-webkit-scrollbar-track { background: transparent; }
 
         .review-item {
-            border-bottom: 1px solid #ccc;
-            padding: 12px 0;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F5F5F4;
+            transition: background 0.15s;
         }
-        .review-item:last-child { border-bottom: none; }
-        .review-user { font-weight: bold; font-size: 1rem; }
-        .review-stars { color: #FFAC4D; font-size: 0.85rem; margin-bottom: 3px; }
-        .review-text { font-size: 0.95rem; color: #333; }
 
-        /* 대여하기 버튼 */
-        .btn-rent {
-            background-color: #FFAC4D;
-            border: none;
-            border-radius: 15px;
-            padding: 10px 50px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-top: 20px;
-            transition: background-color 0.2s;
+        .review-item:last-child { border-bottom: none; }
+        .review-item:hover { background: #FAFAF8; }
+
+        .review-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
         }
-        .btn-rent:hover { background-color: #ff9933; }
+
+        .review-user {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .review-stars {
+            color: var(--star);
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .review-text {
+            font-size: 13.5px;
+            color: var(--text-sub);
+            line-height: 1.6;
+        }
+
+        .review-empty {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .review-empty .empty-icon {
+            font-size: 36px;
+            opacity: 0.3;
+            margin-bottom: 8px;
+        }
+
+        /* ── Rent Button ── */
+        .rent-wrap {
+            display: flex;
+            justify-content: center;
+            padding-top: 8px;
+        }
+
+        .btn-rent {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
+            border: none;
+            border-radius: 50px;
+            padding: 14px 64px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 16px rgba(245,158,11,0.35);
+            transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+        }
+
+        .btn-rent:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245,158,11,0.40);
+        }
+
+        .btn-rent:active { transform: translateY(0); }
     </style>
 </head>
 <body>
 
-<nav class="header-nav">
-    <a th:href="@{/books/index}" class="home-btn" title="홈으로 이동">
-        <span class="material-symbols-outlined" style="font-size: 40px; font-weight: 200;">library_books</span>
-    </a>
-</nav>
+<!-- Header -->
+<div th:replace="~{header :: header}"></div>
 
 <div class="detail-container">
-    <div class="row g-3 book-top-section">
-        <div class="col-md-2">
-            <div class="gray-box book-cover">
-                <img th:if="${book.imageUrl != null}" th:src="${book.imageUrl}" alt="도서 표지">
-                <span th:unless="${book.imageUrl != null}">표지</span>
-            </div>
+
+    <!-- ── 도서 상단 정보 ── -->
+    <div class="book-top-section">
+
+        <!-- 표지 -->
+        <div class="book-cover">
+            <img th:if="${book.imageUrl != null and !#strings.isEmpty(book.imageUrl)}"
+                 th:src="${book.imageUrl}"
+                 th:alt="${book.title}" />
+            <span th:unless="${book.imageUrl != null and !#strings.isEmpty(book.imageUrl)}">📖</span>
         </div>
 
-        <div class="col-md-10">
-            <div class="gray-box book-info-box">
-                <div class="book-title" th:text="${book.title}">자바의 정석</div>
-                <div class="book-author" th:text="'저자: ' + ${book.author}">저자: 남궁성</div>
-                <div class="book-short-desc" th:text="${book.description}">
-                    자바를 처음 배우는 초보자부터 실무자까지,<br>
-                    객체지향의 원리를 명확하게 설명해주는 교과서입니다.
-                </div>
-            </div>
+        <!-- 정보 -->
+        <div class="book-info-box">
+      <span class="book-status-badge"
+            th:classappend="${book.status == 'AVAILABLE'} ? 'available' : 'rented'"
+            th:text="${book.status == 'AVAILABLE'} ? '대여 가능' : '대여 중'">
+      </span>
+            <div class="book-title" th:text="${book.title}">도서 제목</div>
+            <div class="book-author" th:text="'저자  ' + ${book.author}">저자</div>
+            <div class="book-divider"></div>
+            <div class="book-short-desc" th:text="${book.description}">한줄 설명이 여기에 표시됩니다.</div>
         </div>
     </div>
 
+    <!-- ── 평균 별점 ── -->
+    <div class="rating-summary">
+        <div class="rating-score" th:text="${book.avgRating ?: '0.0'}">0.0</div>
+        <div class="rating-stars">
+            <div class="stars-row">★★★★★</div>
+            <div class="rating-label">/ 5.0 평균 별점</div>
+        </div>
+    </div>
+
+    <!-- ── 리뷰 목록 ── -->
     <div class="review-section">
-        <div class="avg-rating">
-            <span class="material-symbols-outlined star">star</span>
-            <span th:text="'평균 별점: ' + (${book.avgRating ?: '0.0'}) + ' / 5.0'">평균 별점: 4.8 / 5.0</span>
+        <div class="review-section-header">
+            <span class="material-symbols-outlined icon">reviews</span>
+            독자 리뷰
         </div>
+        <div class="review-content">
 
-        <div class="gray-box review-box">
-            <div class="review-content" id="reviewContent">
-                <div class="review-item" th:each="review : ${reviews}">
-                    <div class="review-user" th:text="'닉네임: ' + ${review.nickname}">닉네임: 자바마스터</div>
-
-                    <div class="review-stars" th:text="${review.starString}">★★★★★</div>
-
-                    <div class="review-text" th:text="${review.content}">설명이 너무 친절해서 이해가 쏙쏙 됩니다!</div>
-                </div>
-
-                <div class="review-item" th:if="${#lists.isEmpty(reviews)}">
-                    <div class="review-text" style="text-align:center; color:#777;">아직 등록된 리뷰가 없습니다.</div>
-                </div>
+            <!-- 리뷰 없을 때 -->
+            <div class="review-empty" th:if="${#lists.isEmpty(reviews)}">
+                <div class="empty-icon">💬</div>
+                <p>아직 등록된 리뷰가 없습니다.</p>
             </div>
+
+            <!-- 리뷰 목록 -->
+            <div class="review-item" th:each="review : ${reviews}">
+                <div class="review-top">
+                    <span class="review-user" th:text="${review.nickname}">닉네임</span>
+                    <span class="review-stars" th:text="${review.starString}">★★★★★</span>
+                </div>
+                <div class="review-text" th:text="${review.content}">리뷰 내용</div>
+            </div>
+
         </div>
     </div>
 
-    <div class="text-center">
-        <button class="btn btn-rent" th:onclick="'rentBook(' + ${book.bookId} + ')'">대여하기</button>
+    <!-- ── 대여하기 버튼 ── -->
+    <div class="rent-wrap">
+        <button class="btn-rent"
+                th:onclick="'rentBook(' + ${book.bookId} + ')'"
+                th:disabled="${book.status != 'AVAILABLE'}">
+            대여하기
+        </button>
     </div>
+
 </div>
 
 <script>
     async function rentBook(bookId) {
-        if(!confirm("이 도서를 대여하시겠습니까?")) {
-            return;
-        }
-
+        if (!confirm("이 도서를 대여하시겠습니까?")) return;
         try {
-            // 백엔드 API 주소 수정: /loans/borrow/{bookId}
             const response = await fetch(`/loans/borrow/${bookId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-
             const data = await response.json();
-
-            if(data.success) {
+            if (data.success) {
                 alert(data.message || "대여가 성공적으로 완료되었습니다!");
-                // 대여 성공 시 마이페이지로 이동
                 window.location.href = "/loans/my-loans";
             } else {
-                alert(data.message || "대여 처리에 실패했습니다. (이미 대여중인 도서일 수 있습니다.)");
+                alert(data.message || "대여 처리에 실패했습니다.");
             }
-        } catch(error) {
-            console.error("대여 오류:", error);
+        } catch (error) {
             alert("서버와 통신 중 오류가 발생했습니다.");
         }
     }

@@ -31,7 +31,7 @@ public class AdminController {
      */
     @GetMapping("/books")
     public String adminIndex(HttpSession session, Model model) {
-        if (isNotAdmin(session)) return "redirect:/login"; // 권한 없으면 로그인창으로
+        if (isNotAdmin(session)) return "redirect:/user/login"; // 권한 없으면 로그인창으로
 
         List<BookEntity> books = bookService.getAllActiveBooks(); // 삭제되지 않은 도서 전체
         model.addAttribute("books", books);
@@ -43,7 +43,7 @@ public class AdminController {
      */
     @GetMapping("/books/add")
     public String addBookPage(HttpSession session) {
-        if (isNotAdmin(session)) return "redirect:/login";
+        if (isNotAdmin(session)) return "redirect:/user/login";
         return "admin_book_add"; // templates/admin_book_add.html 호출
     }
 
@@ -55,7 +55,7 @@ public class AdminController {
                                @RequestParam("imageFile") org.springframework.web.multipart.MultipartFile imageFile, // 1. 이거 추가!
                                HttpSession session) {
 
-        if (isNotAdmin(session)) return "redirect:/login";
+        if (isNotAdmin(session)) return "redirect:/user/login";
 
         try {
             // 2. 서비스 호출 시 이미지 파일도 함께 넘기도록 수정 (Service 코드도 수정 필요)
@@ -71,10 +71,18 @@ public class AdminController {
      */
     @PostMapping("/books/delete/{bookId}") // DeleteMapping 대신 PostMapping(HTML Form 호환)
     public String deleteBook(@PathVariable Integer bookId, HttpSession session) {
-        if (isNotAdmin(session)) return "redirect:/login";
+        if (isNotAdmin(session)) return "redirect:/user/login";
 
-        bookService.deleteBook(bookId);
-        return "redirect:/admin/books";
+        try {
+            bookService.deleteBook(bookId);
+            return "redirect:/admin/books";
+        } catch (Exception e) {
+            try {
+                return "redirect:/admin/books?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8");
+            } catch (java.io.UnsupportedEncodingException ex) {
+                return "redirect:/admin/books?error=delete_failed";
+            }
+        }
     }
 
     /**
@@ -82,7 +90,7 @@ public class AdminController {
      */
     @GetMapping("/users")
     public String userManagement(HttpSession session, Model model) {
-        if (isNotAdmin(session)) return "redirect:/login";
+        if (isNotAdmin(session)) return "redirect:/user/login";
 
         // 사용자별 대출 현황 데이터를 가져와 모델에 담음
         model.addAttribute("userLoans", adminService.getAllLoanHistory());

@@ -54,7 +54,7 @@ public class UserController {
 
             // 권한에 따른 초기 페이지 분기
             if ("ADMIN".equals(user.getRole())) {
-                return "redirect:/admin/index";
+                return "redirect:/admin/books";
             }
             return "redirect:/books/index";
 
