@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 상세 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { background-color: #fff; }
+        
+        /* 1. 상단 헤더: 요청 이미지와 흡사한 라인아트 책 아이콘 (가로줄 제거) */
+        .header-nav { padding: 15px 30px; /* border-bottom 제거 */ }
+        .home-btn {
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .detail-container { max-width: 900px; margin: 10px auto; padding: 10px; }
+
+        /* 공통 회색 박스 규격: #FAF9F7 & 라운드 20px */
+        .gray-box {
+            background-color: #FAF9F7;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 2. 상단 정보 영역 최적화 (초소형 레이아웃) */
+        .book-top-section { height: 180px; } /* 전체 높이를 180px로 대폭 축소 */
+        .book-cover {
+            width: 100%;
+            height: 100%; /* 부모 박스 높이에 맞춤 */
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* 3. 우측 설명 박스 (세로만 슬림하게 조정) */
+        .book-info-box {
+            height: 100%; /* 이미지 높이에 맞춤 */
+            padding: 20px 25px; /* 패딩을 줄여 공간 확보 */
+            justify-content: flex-start;
+        }
+        .book-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 2px; }
+        .book-author { font-size: 1.05rem; color: #444; margin-bottom: 10px; }
+        .book-short-desc { font-size: 0.95rem; line-height: 1.4; color: #333; }
+
+        /* 하단 리뷰 영역: 내부 스크롤 적용 */
+        .review-section { margin-top: 25px; }
+        .avg-rating { font-size: 1.1rem; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; }
+        .avg-rating .star { color: #FFAC4D; margin-right: 5px; }
+
+        .review-box {
+            width: 100%;
+            padding: 20px;
+            display: block;
+            overflow-y: hidden;
+        }
+        
+        /* 리뷰 컨텐츠 컨테이너 (여기에 스크롤 적용) */
+        .review-content {
+            max-height: 270px; /* 리뷰 3개 높이로 제한 */
+            overflow-y: auto; /* 내용이 넘치면 스크롤 생성 */
+        }
+
+        /* 스크롤바 스타일 커스터마이징 (깔끔하게) */
+        .review-content::-webkit-scrollbar { width: 8px; }
+        .review-content::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 4px; }
+        .review-content::-webkit-scrollbar-track { background-color: rgba(0,0,0,0.05); }
+
+        .review-item {
+            border-bottom: 1px solid #ccc;
+            padding: 12px 0;
+        }
+        .review-item:last-child { border-bottom: none; }
+        .review-user { font-weight: bold; font-size: 1rem; }
+        .review-stars { color: #FFAC4D; font-size: 0.85rem; margin-bottom: 3px; }
+        .review-text { font-size: 0.95rem; color: #333; }
+
+        /* 대여하기 버튼 */
+        .btn-rent {
+            background-color: #FFAC4D;
+            border: none;
+            border-radius: 15px;
+            padding: 10px 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+        .btn-rent:hover { background-color: #ff9933; }
+    </style>
+</head>
+<body>
+
+    <nav class="header-nav">
+        <a href="index.html" class="home-btn" title="홈으로 이동">
+            <span class="material-symbols-outlined" style="font-size: 40px; font-weight: 200;">library_books</span>
+        </a>
+    </nav>
+
+    <div class="detail-container">
+        <div class="row g-3 book-top-section">
+            <div class="col-md-2"> <div class="gray-box book-cover">표지</div>
+            </div>
+
+            <div class="col-md-10"> <div class="gray-box book-info-box">
+                    <div class="book-title">자바의 정석</div>
+                    <div class="book-author">저자: 남궁성</div>
+                    <div class="book-short-desc">
+                        자바를 처음 배우는 초보자부터 실무자까지,<br>
+                        객체지향의 원리를 명확하게 설명해주는 교과서입니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-section">
+            <div class="avg-rating">
+                <span class="material-symbols-outlined star">star</span>
+                평균 별점: 4.8 / 5.0
+            </div>
+            
+            <div class="gray-box review-box">
+                <div class="review-content" id="reviewContent">
+                    <div class="review-item">
+                        <div class="review-user">닉네임: 자바마스터</div>
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-text">설명이 너무 친절해서 이해가 쏙쏙 됩니다!</div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-user">닉네임: 코딩초보</div>
+                        <div class="review-stars">★★★★☆</div>
+                        <div class="review-text">내용은 좋은데 초보자가 보기엔 조금 두껍네요.</div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-user">닉네임: 인프라보안</div>
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-text">기초를 탄탄히 잡기에 이만한 책이 없습니다.</div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-user">닉네임: 스프링러너</div>
+                        <div class="review-stars">★★★★★</div>
+                        <div class="review-text">실제 예제가 많아서 도움이 많이 됐어요.</div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-user">닉네임: 데이터베이스</div>
+                        <div class="review-stars">★★★★☆</div>
+                        <div class="review-text">다루는 내용이 정말 방대해서 좋습니다.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-rent">대여하기</button>
+        </div>
+    </div>
+
+</body>
+</html>
