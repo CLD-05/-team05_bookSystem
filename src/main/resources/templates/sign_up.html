@@ -11,16 +11,15 @@
         .form-control, .form-select { border-radius: 20px !important; border: 1px solid #E9E7E6; padding: 10px 20px; }
         .pw-group { position: relative; }
         .pw-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; }
-        /* .btn-signup { background-color: #F59E0B; border: none; padding: 12px 45px; font-weight: bold; border-radius: 5px; color: #000; } */
         .btn-signup { 
             background-color: #F59E0B !important; 
-            color: #E9E7E6 !important;             
+            color: #fff !important;             
             border: none !important;            
             padding: 12px 45px; 
             font-weight: bold; 
             border-radius: 5px; 
-            transition: none !important; /* 마우스 올려도 부드럽게 변하는 효과 제거 */
-            box-shadow: none !important; /* 클릭 시 그림자 제거 */
+            transition: none !important;
+            box-shadow: none !important;
         }
         .form-label { font-weight: bold; margin-bottom: 0; white-space: nowrap; }
         .info-text { font-size: 0.85rem; color: #888; text-align: right; }
@@ -50,30 +49,18 @@
     <div class="container text-center mt-5">
         <h2 class="mb-5 fw-bold">회원 가입</h2>
         <div class="signup-container text-start">
-            <form id="signupForm" onsubmit="return startCaptcha(event)">
+            <form id="signupForm" action="/signup" method="post">
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-3 form-label">● 아이디 *</label>
-                    <div class="col-sm-6"><input type="text" id="userId" class="form-control"></div>
+                    <div class="col-sm-6"><input type="text" id="userId" name="userId" class="form-control"></div>
                     <div class="col-sm-3 info-text">4자 이상/ 특수문자 제외</div>
                 </div>
-                <!-- <div class="row mb-3 align-items-center">
-                    <label class="col-sm-3 form-label">● 이메일 *</label>
-                    <div class="col-sm-3"><input type="text" id="email1" class="form-control"></div>
-                    <div class="col-sm-1 text-center">@</div>
-                    <div class="col-sm-2"><input type="text" id="email2" class="form-control"></div>
-                    <div class="col-sm-3">
-                        <select class="form-select" onchange="document.getElementById('email2').value=this.value">
-                            <option value="">직접 입력 ▼</option>
-                            <option value="naver.com">naver.com</option>
-                            <option value="gmail.com">gmail.com</option>
-                        </select>
-                    </div>
-                </div> -->
+
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-3 form-label">● 이메일 *</label>
-                    <div class="col-sm-3"><input type="text" id="email1" class="form-control" placeholder="example"></div>
+                    <div class="col-sm-3"><input type="text" id="email1" name="email1" class="form-control" placeholder="example"></div>
                     <div class="col-auto px-0 text-center" style="width: 10px;">@</div>
-                    <div class="col-sm-2"><input type="text" id="email2" class="form-control" placeholder="naver.com"></div>
+                    <div class="col-sm-2"><input type="text" id="email2" name="email2" class="form-control" placeholder="naver.com"></div>
                     <div class="col-sm-2">
                         <select class="form-select" id="emailSelect" onchange="document.getElementById('email2').value=this.value">
                             <option value="">직접 입력</option>
@@ -83,14 +70,16 @@
                         </select>
                     </div>
                 </div>
+
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-3 form-label">● 비밀번호 *</label>
                     <div class="col-sm-6 pw-group">
-                        <input type="password" id="pw" class="form-control">
+                        <input type="password" id="pw" name="password" class="form-control">
                         <span class="material-symbols-outlined pw-toggle" onclick="togglePassword('pw', this)">visibility</span>
                     </div>
                     <div class="col-sm-3 info-text">8자 이상, 대/소문자/숫자 조합</div>
                 </div>
+
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-3 form-label">● 비밀번호 재입력 *</label>
                     <div class="col-sm-6 pw-group">
@@ -98,11 +87,15 @@
                         <span class="material-symbols-outlined pw-toggle" onclick="togglePassword('pwConfirm', this)">visibility</span>
                     </div>
                 </div>
+
                 <div class="row mb-4 align-items-center">
                     <label class="col-sm-3 form-label">● 닉네임 *</label>
-                    <div class="col-sm-6"><input type="text" id="nickname" class="form-control"></div>
+                    <div class="col-sm-6"><input type="text" id="nickname" name="nickname" class="form-control"></div>
                 </div>
-                <div class="text-center mt-5"><button type="submit" class="btn btn-signup">가입하기</button></div>
+
+                <div class="text-center mt-5">
+                    <button type="button" class="btn btn-signup" onclick="startCaptcha()">가입하기</button>
+                </div>
             </form>
         </div>
     </div>
@@ -145,8 +138,7 @@
         let gapPos = { x: 0, y: 0 };
 
         // 1. 가입하기 클릭 시 검증 로직
-        function startCaptcha(e) {
-            e.preventDefault();
+        function startCaptcha() {
             const userId = document.getElementById('userId').value.trim();
             const email1 = document.getElementById('email1').value.trim();
             const email2 = document.getElementById('email2').value.trim();
@@ -156,6 +148,8 @@
 
             if (!userId) return showModal("아이디를 입력해주세요.", "userId");
             if (!email1 || !email2) return showModal("이메일을 정확히 입력해주세요.", "email1");
+            
+            // 비밀번호 정규식 (대문자, 소문자, 숫자 포함 8자 이상)
             const pwRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
             if (!pwRegex.test(pw)) return showModal("비밀번호 조건을 확인해주세요.", "pw");
             if (pw !== pwConfirm) return showModal("비밀번호가 일치하지 않습니다.", "pwConfirm");
@@ -166,7 +160,7 @@
             captchaModal.show();
         }
 
-        // 2. 캡차 초기화 (랜덤 위치 생성)
+        // 2. 캡차 초기화
         function initCaptcha() {
             const piece = document.getElementById('puzzlePiece');
             const gap = document.getElementById('puzzleGap');
@@ -176,7 +170,6 @@
             slider.value = 0;
             status.innerText = "";
             
-            // 랜덤 위치 (우측 50% 영역 내)
             gapPos.x = Math.floor(Math.random() * 120) + 150; 
             gapPos.y = Math.floor(Math.random() * 80) + 20;
             
@@ -188,22 +181,22 @@
             piece.style.backgroundPosition = `-${gapPos.x}px -${gapPos.y}px`;
         }
 
-        // 3. 슬라이더 조작 이벤트
+        // 3. 슬라이더 이벤트
         document.getElementById('captchaSlider').addEventListener('input', function(e) {
-            const val = e.target.value;
-            document.getElementById('puzzlePiece').style.left = val + "px";
+            document.getElementById('puzzlePiece').style.left = e.target.value + "px";
         });
 
         document.getElementById('captchaSlider').addEventListener('change', function(e) {
             const val = parseInt(e.target.value);
             const status = document.getElementById('captchaStatus');
             
-            // 오차 범위 5px 허용
             if (Math.abs(val - gapPos.x) <= 5) {
-                status.innerText = "검증 성공! 잠시 후 이동합니다.";
+                status.innerText = "검증 성공! 가입을 처리합니다.";
                 status.style.color = "green";
+                
+                // ★ 핵심: 1초 뒤에 실제로 폼 데이터를 서버로 전송!
                 setTimeout(() => {
-                    location.href = "sign_up_result.html";
+                    document.getElementById('signupForm').submit();
                 }, 1000);
             } else {
                 status.innerText = "실패! 다시 시도하세요.";
