@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>사용자 관리</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #F59E0B;
+      --primary-dark: #D97706;
+      --primary-light: #FEF3C7;
+      --sidebar-bg: #E5E5E5;
+      --content-bg: #F0F0F0;
+      --border: #D6D3D1;
+      --text: #1C1917;
+      --text-muted: #78716C;
+      --white: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    #header-container header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 40px;
+      background: #FFFFFF;
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #header-container .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    #header-container .logo-icon { font-size: 28px; line-height: 1; }
+    #header-container .logo-text { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+    #header-container nav { display: flex; align-items: center; gap: 6px; }
+    #header-container nav a {
+      text-decoration: none; font-size: 14px; font-weight: 500;
+      color: var(--text-muted); padding: 7px 16px; border-radius: 8px;
+      transition: background 0.18s, color 0.18s;
+    }
+    #header-container nav a:hover { background: #F5F5F4; color: var(--text); }
+    #header-container nav a.btn-logout { border: 1.5px solid var(--border); }
+    #header-container nav a.btn-mypage { background: var(--primary); color: #fff; font-weight: 600; }
+    #header-container nav a.btn-mypage:hover { background: var(--primary-dark); }
+    #header-container .divider { width: 1px; height: 16px; background: var(--border); margin: 0 2px; }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      width: 220px;
+      background: var(--sidebar-bg);
+      flex-shrink: 0;
+      padding-top: 20px;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 20%; /* 요소를 세로로 배치 */
+    }
+
+    .sidebar-menu a {
+      display: block;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 14px 24px;
+      background: transparent;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 1px solid #D1CEC9;
+      border-top: 1px solid #D1CEC9;
+      border-right: 1px solid #D1CEC9;
+      border-left: 1px solid #D1CEC9;
+      width: 100%; 
+      box-sizing: border-box;
+    }
+
+    .sidebar-menu a:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .sidebar-menu a.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      padding: 30px 36px;
+      background: var(--white);
+    }
+
+    /* ── Search ── */
+    .search-wrap { 
+      display: flex;
+      margin-top: 3%;
+      justify-content: center;
+      margin-bottom: 30px; }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      background: #FEF3C7;
+      border-radius: 24px;
+      padding: 10px 18px;
+      width: 100%;
+      max-width: 600px;
+      gap: 8px;
+      border: 1.5px solid #FDE68A;
+    }
+
+    .search-input-wrap input {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .search-input-wrap input::placeholder { color: #B45309; opacity: 0.6; }
+    .search-input-wrap .search-icon { font-size: 16px; color: #B45309; cursor: pointer; }
+
+    /* ── Table ── */
+    .table-header {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr 1.7fr 1.1fr 1fr 0.9fr;
+      padding: 10px 16px;
+      background: var(--content-bg);
+      border-radius: 6px 6px 0 0;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .table-header span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .table-header span:first-child { text-align: left; }
+
+    .user-list-box {
+      background: var(--content-bg);
+      border-radius: 0 0 10px 10px;
+      height: calc(100vh - 280px);
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* 스크롤바 스타일 */
+    .user-list-box::-webkit-scrollbar { width: 6px; }
+    .user-list-box::-webkit-scrollbar-track { background: transparent; }
+    .user-list-box::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 10px; }
+    .user-list-box::-webkit-scrollbar-thumb:hover { background: #A8A29E; }
+
+    /* ── User Row ── */
+    .user-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.6fr 0.9fr 1.2fr 0.6fr;
+      align-items: center;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 12px 16px;
+      gap: 8px;
+      animation: fadeUp 0.25s ease both;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .user-row:hover {
+      border-color: var(--primary);
+      box-shadow: 0 2px 10px rgba(245,158,11,0.10);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-row span {
+      font-size: 13.5px;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .user-row span:first-child { text-align: left; font-weight: 600; }
+
+    .overdue {
+      color: #DC2626;
+      font-weight: 700;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header-container"></div>
+
+  <div class="layout">
+    <aside>
+      <nav class="sidebar-menu">
+        <a href="admin_index.html">도서 관리</a>
+        <a href="admin_user.html" class="active">사용자 관리</a>
+      </nav>
+    </aside>
+
+    <div class="content">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <div class="search-input-wrap">
+          <input type="text" id="search-input" placeholder="닉네임 검색" oninput="filterUsers()" />
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
+
+      <!-- Table Header -->
+      <div class="table-header">
+        <span>&nbsp;닉네임</span>
+        <span>대여권수</span>
+        <span>대여한 책 제목</span>
+        <span>대여일</span>
+        <span>반납일</span>
+        <span>연체일수</span>
+      </div>
+
+      <!-- User List -->
+      <div class="user-list-box" id="user-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "http://localhost:8080";
+ 
+    let ALL_USERS = [];   // 전체 목록 보관 (검색 필터용)
+ 
+    // ── 사용자 목록 조회 ───────────────────────────────────
+    async function loadUsers() {
+      const box = document.getElementById('user-list');
+      box.innerHTML = `<div class="empty-state">불러오는 중...</div>`;
+ 
+      try {
+        const res = await fetch(`${BASE_URL}/api/admin/users/all`);
+        if (!res.ok) throw new Error("조회 실패");
+ 
+        ALL_USERS = await res.json();
+        renderUsers(ALL_USERS);
+ 
+      } catch (e) {
+        box.innerHTML = `<div class="empty-state" style="color:#DC2626;">사용자 목록을 불러올 수 없습니다.</div>`;
+      }
+    }
+ 
+    // ── 렌더링 ─────────────────────────────────────────────
+    function renderUsers(list) {
+      const box = document.getElementById('user-list');
+      box.innerHTML = '';
+ 
+      if (list.length === 0) {
+        box.innerHTML = `<div class="empty-state">검색 결과가 없습니다.</div>`;
+        return;
+      }
+ 
+      list.forEach((user, i) => {
+        const row = document.createElement('div');
+        row.className = 'user-row';
+        row.style.animationDelay = `${i * 0.04}s`;
+        row.innerHTML = `
+          <span>${user.nickname}</span>
+          <span>${user.currentRentalCount ?? 0}권</span>
+          <span style="text-align:left;font-size:13px;">${user.books ?? '-'}</span>
+          <span>${user.rentDate ?? '-'}</span>
+          <span>${user.returnDate ?? '-'}</span>
+          <span class="${user.overdue > 0 ? 'overdue' : ''}">${user.overdue > 0 ? user.overdue + '일' : '-'}</span>
+        `;
+        box.appendChild(row);
+      });
+    }
+ 
+    // ── 닉네임 검색 (클라이언트 측) ───────────────────────
+    function filterUsers() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      const filtered = ALL_USERS.filter(u => u.nickname.toLowerCase().includes(q));
+      renderUsers(filtered);
+    }
+ 
+    // ── Header 로드 ────────────────────────────────────────
+    fetch('header_admin.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('header-container').innerHTML = html;
+      });
+ 
+    // ── 초기 실행 ──────────────────────────────────────────
+    loadUsers();
+  </script>
+
+</body>
+</html>

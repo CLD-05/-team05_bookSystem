@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="
+http://www.thymeleaf.org/
+">
+<body>
+<div th:fragment="header">
+    <header>
+        <a class="logo" th:href="@{/admin/index}">
+            <span class="logo-icon">📚</span>
+            <span class="logo-text">도서관리시스템</span>
+        </a>
+        <nav>
+            <a th:href="@{/admin/login}" class="btn-logout">로그아웃</a>
+        </nav>
+    </header>
+</div>
+</body>
+</html>
