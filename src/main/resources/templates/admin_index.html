@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>관리자 페이지</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #F59E0B;
+      --primary-dark: #D97706;
+      --primary-light: #FEF3C7;
+      --sidebar-bg: #E5E5E5;
+      --content-bg: #F0F0F0;
+      --border: #D6D3D1;
+      --text: #1C1917;
+      --text-muted: #78716C;
+      --white: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    #header-container header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 40px;
+      background: #FFFFFF;
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #header-container .logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    #header-container .logo-icon { font-size: 28px; line-height: 1; }
+    #header-container .logo-text {
+      font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -0.3px;
+    }
+    #header-container nav { display: flex; align-items: center; gap: 6px; }
+    #header-container nav a {
+      text-decoration: none; font-size: 14px; font-weight: 500;
+      color: var(--text-muted); padding: 7px 16px; border-radius: 8px;
+      transition: background 0.18s, color 0.18s;
+    }
+    #header-container nav a:hover { background: #F5F5F4; color: var(--text); }
+    #header-container nav a.btn-logout { border: 1.5px solid var(--border); }
+    #header-container nav a.btn-mypage {
+      background: var(--primary); color: #fff; font-weight: 600;
+    }
+    #header-container nav a.btn-mypage:hover { background: var(--primary-dark); }
+    #header-container .divider {
+      width: 1px; height: 16px; background: var(--border); margin: 0 2px;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ── */
+    aside {
+      width: 220px;
+      background: var(--sidebar-bg);
+      flex-shrink: 0;
+      padding-top: 20px;
+    }
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 20%; /* 요소를 세로로 배치 */
+    }
+
+    .sidebar-menu a {
+      display: block;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 14px 24px;
+      background: transparent;
+      transition: background 0.15s, color 0.15s;
+      border-bottom: 1px solid #D1CEC9;
+      border-top: 1px solid #D1CEC9;
+      border-right: 1px solid #D1CEC9;
+      border-left: 1px solid #D1CEC9;
+      width: 100%; 
+      box-sizing: border-box;
+    }
+
+    .sidebar-menu a:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .sidebar-menu a.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      padding: 30px 36px;
+      background: var(--white);
+    }
+
+    /* ── Search Bar ── */
+    .search-wrap {
+      display: flex;
+      margin-top: 3%;
+      justify-content: center;
+    }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      background: #FEF3C7;
+      border-radius: 24px;
+      padding: 10px 18px;
+      width: 100%;
+      max-width: 600px;
+      gap: 8px;
+      border: 1.5px solid #FDE68A;
+    }
+
+    .search-input-wrap input {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .search-input-wrap input::placeholder { color: #B45309; opacity: 0.6; }
+
+    .search-input-wrap .search-icon {
+      font-size: 16px;
+      color: #B45309;
+      cursor: pointer;
+    }
+
+    /* ── Book List Area ── */
+    .section-top {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    .btn-add {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 4px;
+      border-radius: 6px;
+      transition: color 0.15s;
+    }
+
+    .btn-add:hover { color: var(--primary-dark); }
+    .btn-add .plus { font-size: 18px; font-weight: 400; }
+
+    .table-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      padding: 10px 16px;
+      background: var(--content-bg);
+      border-radius: 6px 6px 0 0;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .table-header span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .book-list-box {
+      background: var(--content-bg);
+      border-radius: 0 0 10px 10px;
+      height: calc(100vh - 300px);        /* 고정 높이 */
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Book Row ── */
+    .book-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      align-items: center;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 12px 16px;
+      gap: 8px;
+      animation: fadeUp 0.25s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .book-row span {
+      font-size: 13.5px;
+      color: var(--text);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .badge.available { background: #D1FAE5; color: #065F46; }
+    .badge.rented    { background: #FEE2E2; color: #991B1B; }
+    .badge.reserved  { background: #FEF3C7; color: #92400E; }
+
+    .btn-delete {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--primary);
+      border: none;
+      border-radius: 6px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-delete:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px 36px 24px;
+      width: 300px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: popIn 0.2s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    .modal-icon { font-size: 36px; }
+
+    .modal-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: -12px;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .modal-btns button {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 0;
+      flex: 1;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-no {
+      background: #F5F5F4;
+      color: var(--text-muted);
+    }
+    .btn-no:hover { background: #E7E5E4; }
+
+    .btn-yes {
+      background: #F59E0B;
+      color: #fff;
+    }
+    .btn-yes:hover { background: #F59E0B; transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div id="header-container"></div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside>
+      <nav class="sidebar-menu">
+        <a href="admin_index.html" class="active">도서 관리</a>
+        <a href="admin_user.html">사용자 관리</a>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <div class="search-input-wrap">
+          <input type="text" id="search-input" placeholder="도서검색" oninput="filterBooks()" />
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
+
+      <!-- Section Top -->
+      <div class="section-top">
+        <button class="btn-add" onclick="location.href='admin_book_add.html'">
+          <span class="plus">＋</span> 도서 추가
+        </button>
+      </div>
+
+      <!-- Table Header -->
+      <div class="table-header">
+        <span>&nbsp;&nbsp;제목</span>
+        <span>저자</span>
+        <span>대여 상태</span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      </div>
+
+      <!-- Book List -->
+      <div class="book-list-box" id="book-list"></div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">🗑️</div>
+      <div class="modal-text">도서를 삭제하시겠습니까?</div>
+      <div class="modal-btns">
+        <button class="btn-no"  onclick="closeModal()">No</button>
+        <button class="btn-yes" onclick="confirmDelete()">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const BASE_URL = "http://localhost:8080";
+
+  const statusLabel = {
+    AVAILABLE: "대여 가능",
+    RENTED:    "대여 중",
+    DELETED:   "폐기"
+  };
+
+  const statusClass = {
+    AVAILABLE: "available",
+    RENTED:    "rented",
+    DELETED:   "rented"
+  };
+
+  let ALL_BOOKS = [];
+  let deleteTargetId = null;
+
+  // 📌 도서 목록 조회
+  async function loadBooks() {
+    const box = document.getElementById('book-list');
+    box.innerHTML = `<div style="text-align:center;color:#A8A29E;padding:60px 0;">불러오는 중...</div>`;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/books/all`, {
+        credentials: "include" // 🔥 세션 유지
+      });
+
+      if (!res.ok) throw new Error();
+
+      ALL_BOOKS = await res.json();
+      renderBooks(ALL_BOOKS);
+
+    } catch (e) {
+      box.innerHTML = `<div style="text-align:center;color:#DC2626;padding:60px 0;">도서 목록을 불러올 수 없습니다.</div>`;
+    }
+  }
+
+  // 📌 렌더링
+  function renderBooks(list) {
+    const box = document.getElementById('book-list');
+    box.innerHTML = '';
+
+    const visible = list.filter(b => b.status !== 'DELETED');
+
+    if (visible.length === 0) {
+      box.innerHTML = `<div style="text-align:center;color:#A8A29E;padding:60px 0;">검색 결과가 없습니다.</div>`;
+      return;
+    }
+
+    visible.forEach(book => {
+      const status = book.status || 'AVAILABLE';
+
+      const row = document.createElement('div');
+      row.className = 'book-row';
+
+      // 🔥 여기 수정됨 (book_id → bookId)
+      row.dataset.id = book.bookId;
+
+      row.innerHTML = `
+        <span>${book.title}</span>
+        <span>${book.author}</span>
+        <span><span class="badge ${statusClass[status] ?? 'available'}">
+          ${statusLabel[status] ?? status}
+        </span></span>
+
+        <!-- 🔥 여기도 수정 -->
+        <button class="btn-delete" onclick="openModal(${book.bookId})">삭제</button>
+      `;
+
+      box.appendChild(row);
+    });
+  }
+
+  // 📌 검색
+  function filterBooks() {
+    const q = document.getElementById('search-input').value.trim().toLowerCase();
+
+    const filtered = ALL_BOOKS.filter(b =>
+      b.title.toLowerCase().includes(q) ||
+      b.author.toLowerCase().includes(q)
+    );
+
+    renderBooks(filtered);
+  }
+
+  // 📌 모달
+  function openModal(id) {
+    deleteTargetId = id;
+    document.getElementById('modal-overlay').classList.add('show');
+  }
+
+  function closeModal() {
+    deleteTargetId = null;
+    document.getElementById('modal-overlay').classList.remove('show');
+  }
+
+  // 📌 삭제
+  async function confirmDelete() {
+    if (!deleteTargetId) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/books/${deleteTargetId}`, {
+        method: "DELETE",
+        credentials: "include" // 🔥 이것도 필수
+      });
+
+      if (res.ok) {
+        closeModal();
+        loadBooks();
+      } else {
+        const text = await res.text();
+        alert(text || "삭제 실패");
+        closeModal();
+      }
+
+    } catch (e) {
+      alert("서버 연결 실패");
+      closeModal();
+    }
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // 📌 헤더 로드
+  fetch('header_admin.html')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('header-container').innerHTML = html;
+    });
+
+  // 📌 초기 실행
+  loadBooks();
+</script>
+
+</body>
+</html>

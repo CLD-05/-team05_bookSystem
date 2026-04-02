@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>도서 검색</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #F59E0B;
+      --primary-dark: #D97706;
+      --primary-light: #FEF3C7;
+      --bg: #FAF9F7;
+      --bg-card: #FFFFFF;
+      --text: #1C1917;
+      --text-sub: #44403C;
+      --text-muted: #78716C;
+      --border: #E7E5E4;
+      --border-focus: #F59E0B;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.09);
+      --shadow-hover: 0 8px 28px rgba(245,158,11,0.13);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header include ── */
+    #header-container header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 40px;
+      background: #FFFFFF;
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    #header-container .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    #header-container .logo-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    #header-container .logo-text {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    #header-container nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #header-container nav a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: var(--radius-sm);
+      transition: background 0.18s, color 0.18s;
+    }
+
+    #header-container nav a:hover {
+      background: #F5F5F4;
+      color: var(--text);
+    }
+
+    #header-container nav a.btn-logout {
+      border: 1.5px solid var(--border);
+    }
+
+    #header-container nav a.btn-mypage {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    #header-container nav a.btn-mypage:hover {
+      background: var(--primary-dark);
+    }
+
+    #header-container .divider {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+      margin: 0 2px;
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── Search Bar ── */
+    .search-section {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 32px;
+    }
+
+    .search-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-field label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .search-field input {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: #FAF9F7;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      width: 180px;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+
+    .search-field input:focus {
+      border-color: var(--border-focus);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+    }
+
+    .search-field input::placeholder {
+      color: #C4B9B3;
+    }
+
+    .btn-search {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--primary);
+      border: none;
+      border-radius: 20px;
+      padding: 9px 28px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+      box-shadow: 0 2px 8px rgba(245,158,11,0.28);
+      margin-left: auto;
+    }
+
+    .btn-search:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 4px 14px rgba(245,158,11,0.38);
+      transform: translateY(-1px);
+    }
+
+    .btn-search:active {
+      transform: translateY(0);
+    }
+
+    /* ── Results ── */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .results-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      background: #F5F5F4;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .results-box {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 240px;
+    }
+
+    /* ── Book Card ── */
+    .book-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      background: #FAFAF9;
+      cursor: pointer;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.15s;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .book-card:nth-child(1) { animation-delay: 0.04s; }
+    .book-card:nth-child(2) { animation-delay: 0.10s; }
+    .book-card:nth-child(3) { animation-delay: 0.16s; }
+    .book-card:nth-child(4) { animation-delay: 0.22s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .book-card:hover {
+      border-color: var(--primary);
+      background: #FFFBF0;
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .book-card.selected {
+      border-color: #3B82F6;
+      background: #EFF6FF;
+      box-shadow: 0 4px 16px rgba(59,130,246,0.12);
+    }
+
+    /* Book Cover */
+    .book-cover {
+      width: 64px;
+      height: 86px;
+      border-radius: 6px;
+      border: 1px solid #E7E5E4;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #F0ECE8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      overflow: hidden;
+    }
+
+    .book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .book-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .book-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.2px;
+    }
+
+    .book-author {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .book-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 3px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.2px;
+    }
+
+    .badge.available {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .badge.rented {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    .badge.reserved {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.7;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text-muted);
+      padding: 40px 0;
+    }
+
+    .empty-state .icon {
+      font-size: 40px;
+      opacity: 0.4;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header (header.html fetch로 삽입) -->
+  <div id="header-container"></div>
+
+  <main>
+    <!-- Search Bar -->
+    <div class="search-section">
+      <div class="search-field">
+        <label for="input-title">책제목:</label>
+        <input type="text" id="input-title" placeholder="제목 입력" />
+      </div>
+      <div class="search-field">
+        <label for="input-author">저자명:</label>
+        <input type="text" id="input-author" placeholder="저자 입력" />
+      </div>
+      <button class="btn-search" onclick="searchBooks()">검색</button>
+    </div>
+
+    <!-- Results -->
+    <div class="results-header">
+      <span class="results-title">조회 결과</span>
+    </div>
+
+    <div class="results-box" id="results-box">
+      <!-- 카드가 JS로 렌더링됨 -->
+    </div>
+  </main>
+
+  <script>
+    const BASE_URL = "http://localhost:8080";
+ 
+    const statusLabel = {
+      AVAILABLE: "대여 가능",
+      RENTED:    "대여 중",
+      DELETED:   "폐기"
+    };
+ 
+    const statusClass = {
+      AVAILABLE: "available",
+      RENTED:    "rented",
+      DELETED:   "rented"
+    };
+ 
+    // ── 카드 렌더링 ──────────────────────────────────────────
+    function renderBooks(books) {
+      const box = document.getElementById('results-box');
+      box.innerHTML = '';
+ 
+      // DELETED 제외
+      const visible = books.filter(b => b.status !== 'DELETED');
+ 
+      if (visible.length === 0) {
+        box.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">🔍</div>
+            <p>검색 결과가 없습니다.</p>
+          </div>`;
+        return;
+      }
+ 
+      visible.forEach(book => {
+        const status = book.status || 'AVAILABLE';
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.dataset.id = book.book_id;
+        card.innerHTML = `
+          <div class="book-cover">📖</div>
+          <div class="book-info">
+            <div class="book-title">책제목: ${book.title}</div>
+            <div class="book-author">저자명: ${book.author}</div>
+            <div class="book-meta-row">
+              <span class="badge ${statusClass[status] ?? 'available'}">
+                <span class="badge-dot"></span>
+                대여상태: ${statusLabel[status] ?? status}
+              </span>
+            </div>
+          </div>`;
+        card.addEventListener('click', () => toggleSelect(card));
+        box.appendChild(card);
+      });
+    }
+ 
+    // ── 카드 선택 토글 ───────────────────────────────────────
+    function toggleSelect(card) {
+      document.querySelectorAll('.book-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    }
+ 
+    // ── 검색 ────────────────────────────────────────────────
+    async function searchBooks() {
+      const titleQ  = document.getElementById('input-title').value.trim();
+      const authorQ = document.getElementById('input-author').value.trim();
+      const box     = document.getElementById('results-box');
+ 
+      // 둘 다 비어있으면 전체 조회
+      let url;
+      if (titleQ) {
+        url = `${BASE_URL}/api/books/search/title?keyword=${encodeURIComponent(titleQ)}`;
+      } else if (authorQ) {
+        url = `${BASE_URL}/api/books/search/author?keyword=${encodeURIComponent(authorQ)}`;
+      } else {
+        url = `${BASE_URL}/api/books/all`;
+      }
+ 
+      box.innerHTML = `
+        <div class="empty-state">
+          <p>검색 중...</p>
+        </div>`;
+ 
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("검색 실패");
+ 
+        const books = await res.json();
+        renderBooks(books);
+ 
+      } catch (e) {
+        box.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">⚠️</div>
+            <p>검색 중 오류가 발생했습니다.</p>
+          </div>`;
+      }
+    }
+ 
+    // Enter 키 검색 지원
+    ['input-title', 'input-author'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') searchBooks();
+      });
+    });
+ 
+    // ── Header 동적 로드 ─────────────────────────────────────
+    fetch('header.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('header-container').innerHTML = html;
+      });
+ 
+    // ── 초기 전체 목록 로드 ──────────────────────────────────
+    searchBooks();
+  </script>
+
+</body>
+</html>
