@@ -22,5 +22,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     // 메서드 이름으로 만들기 복잡할 땐 이렇게 @Query를 쓰는 게 훨씬 깔끔합니다.
     @Query("SELECT b FROM BookEntity b WHERE b.status != 'DELETED'")
     List<BookEntity> findAllActiveBooks();
+    
+    List<BookEntity> findByTitleContainingAndAuthorContaining(String title, String author);
 
 }

@@ -1,12 +1,14 @@
 package com.example.Service;
 
-import com.example.Entity.BookEntity;
-import com.example.Repository.BookRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.example.Entity.BookEntity;
+import com.example.Repository.BookRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +58,14 @@ public class BookService {
     public List<BookEntity> searchByAuthor(String author) {
         // StatusNot 메서드를 사용하여 "DELETED"가 아닌 것만 조회
         return bookRepository.findByStatusNotAndAuthorContaining("DELETED", author);
+    }
+
+    public List<BookEntity> searchByTitleAndAuthor(String title, String author) {
+        // 사용자가 입력한 값이 null이면 빈 문자열("")로 처리해서 전체 검색이 되게 함 (방어 코드)
+        String searchTitle = (title == null) ? "" : title;
+        String searchAuthor = (author == null) ? "" : author;
+
+        // DB에서 검색 결과 가져오기
+        return bookRepository.findByTitleContainingAndAuthorContaining(searchTitle, searchAuthor);
     }
 }

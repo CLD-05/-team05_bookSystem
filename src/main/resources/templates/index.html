@@ -239,10 +239,8 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
             border: none;
             border: 1px solid #ddd;
             border-radius: 12px;
-            /* 너무 둥근 것보다 12px 정도가 적당해요 */
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            /* 살짝 그림자를 주면 입체감이 살아요 */
             text-align: center;
         }
 
@@ -293,17 +291,17 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
         </nav>
     </header>
     <main>
-        <div class="search-section">
+        <form action="/search" method="GET" class="search-section">
             <div class="search-field">
                 <label for="input-title">책제목:</label>
-                <input type="text" id="input-title" placeholder="제목 입력" />
+                <input type="text" name="title" id="input-title" placeholder="제목 입력" />
             </div>
             <div class="search-field">
                 <label for="input-author">저자명:</label>
-                <input type="text" id="input-author" placeholder="저자 입력" />
+                <input type="text" name="author" id="input-author" placeholder="저자 입력" />
             </div>
-            <button class="btn-search" onclick="searchBooks()">검색</button>
-        </div>
+            <button type="submit" class="btn-search">검색</button>
+        </form>
     </main>
     <section style="margin: 0 auto;">
         <h2 style="margin-left: 200px;">인기도서</h2>
@@ -335,25 +333,6 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
         </div>
     </section>
 
-    <h2 style="margin-left: 200px;">📚 전체 도서 목록</h2>
-    <div class="book-list-container">
-        <table border="1" class="book-list-table">
-            <thead>
-                <tr>
-                    <th>제목</th>
-                    <th>저자</th>
-                    <th>한줄 설명</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each=" book : ${allBooks}">
-                    <td th:text="${book.title}">제목</td>
-                    <td th:text="${book.author}">저자</td>
-                    <td th:text="${book.description}">한줄 설명</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
     <script>
         // 1. 검색 버튼 클릭 시 실행되는 함수
