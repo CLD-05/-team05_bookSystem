@@ -209,13 +209,13 @@
 
 <body>
     <header>
-        <a class="logo" th:href="@{/}">
+        <a class="logo" th:href="@{/books/index}">
             <span class="logo-icon">📚</span>
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
-            <a href="/logout" class="btn-logout">로그아웃</a>
-            <a th:href="@{/mypage}" class="btn-mypage">마이페이지</a>
+            <a th:href="@{/user/logout}" class="btn-logout">로그아웃</a>
+            <a th:href="@{/loans/my-loans}" class="btn-mypage">마이페이지</a>
         </nav>
     </header>
 
@@ -237,15 +237,15 @@
                 <span><strong>책 제목</strong></span>
                 <span><strong>저자명</strong></span>
                 <span><strong>대여일</strong></span>
-                <span><strong>반납일</strong></span>
+                <span><strong>반납기한</strong></span>
                 <span><strong>반납체크</strong></span>
             </div>
-            <div class="rent-row" th:each="book : ${rentedBooks}">
-                <span th:text="${book.title}">#책 제목</span>
-                <span th:text="${book.author}">#저자명</span>
-                <span th:text="${book.loan_Date}">#2026-03-25</span>
-                <span th:text="${book.return_Date}">#2026-04-01</span>
-                <span><input type="checkbox" name="bookSelect" th:value="${book.id}"></span>
+            <div class="rent-row" th:each="loan : ${loans}">
+                <span th:text="${loan.book.title}">#책 제목</span>
+                <span th:text="${loan.book.author}">#저자명</span>
+                <span th:text="${#temporals.format(loan.loanDate, 'yyyy-MM-dd')}">#2026-03-25</span>
+                <span th:text="${#temporals.format(loan.dueDate, 'yyyy-MM-dd')}">#2026-04-01</span>
+                <span><input type="checkbox" name="bookSelect" th:value="${loan.book.bookId}"></span>
             </div>
         </div>
 
@@ -263,11 +263,11 @@
                 <span>대여일</span>
                 <span>반납일</span>
             </div>
-            <div class="all-rent-row" th:each="history : ${allRentalHistory}">
-                <span th:text="${history.title}">#책 제목</span>
-                <span th:text="${history.author}">#저자명</span>
-                <span th:text="${history.loan_Date}">#대여일</span>
-                <span th:text="${history.return_Date}">#반납일</span>
+            <div class="all-rent-row" th:each="hist : ${history}">
+                <span th:text="${hist.book.title}">#책 제목</span>
+                <span th:text="${hist.book.author}">#저자명</span>
+                <span th:text="${#temporals.format(hist.loanDate, 'yyyy-MM-dd')}">#대여일</span>
+                <span th:text="${hist.returnDate != null ? #temporals.format(hist.returnDate, 'yyyy-MM-dd') : '-'}">#반납일</span>
             </div>
         </div>
 
@@ -285,28 +285,32 @@
             }
 
             if (confirm("도서를 반납하시겠습니까?")) {
-                const total = selectedBooks.length; // 내가 체크한 책이 총 몇 권인지?
-                let completedCount = 0; // 성공적으로 처리된 책의 개수
+                const total = selectedBooks.length;
+                let completedCount = 0;
 
                 selectedBooks.forEach(book => {
                     const id = book.value;
 
-                    fetch(`http://localhost:8080/api/loans/return/${id}`, {
+                    // 백엔드 API 주소 수정: /loans/return/{bookId}
+                    fetch(`/loans/return/${id}`, {
                         method: 'POST'
                     })
-                        .then(response => {
-                            if (response.ok) {
-                                completedCount++; // 한 권 성공할 때마다 1씩 더하기
-                                // [핵심] 성공한 개수가 내가 체크한 총 개수랑 같아지면?
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                completedCount++;
                                 if (completedCount === total) {
                                     alert("모든 도서가 성공적으로 반납되었습니다.");
-                                    window.location.href = "return.html"; // 그때서야 이동!
+                                    // 마지막 도서 ID를 쿼리 파라미터로 넘겨서 리뷰 작성 시 사용
+                                    window.location.href = "/books/return?bookId=" + id; 
                                 }
+                            } else {
+                                alert(data.message || "일부 도서 반납 중 오류가 발생했습니다.");
                             }
                         })
                         .catch(err => {
                             console.error("연동 에러:", err);
-                            alert("일부 도서 반납 중 오류가 발생했습니다.");
+                            alert("서버와 통신 중 오류가 발생했습니다.");
                         });
                 });
             }

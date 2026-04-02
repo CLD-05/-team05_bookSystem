@@ -143,7 +143,7 @@
 
                     <div class="review-stars" th:text="${review.starString}">★★★★★</div>
 
-                    <div class="review-text" th:text="${review.comment}">설명이 너무 친절해서 이해가 쏙쏙 됩니다!</div>
+                    <div class="review-text" th:text="${review.content}">설명이 너무 친절해서 이해가 쏙쏙 됩니다!</div>
                 </div>
 
                 <div class="review-item" th:if="${#lists.isEmpty(reviews)}">
@@ -165,18 +165,19 @@
         }
 
         try {
-            // 백엔드 API 주소 (상황에 맞게 수정 필요)
-            const response = await fetch(`/api/loans/rent/${bookId}`, {
+            // 백엔드 API 주소 수정: /loans/borrow/{bookId}
+            const response = await fetch(`/loans/borrow/${bookId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            if(response.ok) {
-                alert("대여가 성공적으로 완료되었습니다!");
-                // 대여 성공 시 마이페이지나 메인으로 이동
-                window.location.href = "/mypage";
+            const data = await response.json();
+
+            if(data.success) {
+                alert(data.message || "대여가 성공적으로 완료되었습니다!");
+                // 대여 성공 시 마이페이지로 이동
+                window.location.href = "/loans/my-loans";
             } else {
-                const data = await response.json().catch(() => ({}));
                 alert(data.message || "대여 처리에 실패했습니다. (이미 대여중인 도서일 수 있습니다.)");
             }
         } catch(error) {

@@ -169,20 +169,21 @@
 
 <body>
     <header>
-        <a class="logo" th:href="@{/}">
+        <a class="logo" th:href="@{/books/index}">
             <span class="logo-icon">📚</span>
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
-            <a href="/logout" class="btn-logout">로그아웃</a>
-            <a th:href="@{/mypage}" class="btn-mypage">마이페이지</a>
+            <a th:href="@{/user/logout}" class="btn-logout">로그아웃</a>
+            <a th:href="@{/loans/my-loans}" class="btn-mypage">마이페이지</a>
         </nav>
     </header>
     <section style="display: flex; justify-content: center; align-items: center; margin: 0 auto; padding-top: 150px;">
         <div class="review-box">
             <p>도서 반납이 완료되었습니다.</p>
             <p>리뷰를 남기시겠습니까?</p>
-            <form action="/review/save" method="POST">
+            <form th:action="@{/loans/review/save}" method="POST">
+                <input type="hidden" name="bookId" th:value="${bookId}">
                 <div class="star-rating">
                     <input type="radio" id="star5" name="rating" value="5" style="display: none;" required /><label
                         for="star5" style="cursor: pointer; color: #E7E5E4;">★</label>
@@ -205,23 +206,15 @@
 
     <script>
         const reviewForm = document.querySelector('form');
-        const textarea = document.querySelector('textarea');
 
         reviewForm.addEventListener('submit', function (event) {
+            // 기본 제출을 일단 막습니다 (확인 창을 띄우기 위해)
             event.preventDefault();
 
-            const isConfirm = confirm("리뷰를 등록하시겠습니까?");
-
-            if (isConfirm) {
+            if (confirm("리뷰를 등록하시겠습니까?")) {
                 alert("리뷰가 등록되었습니다!");
-
-                textarea.value = "";
-
-                const checkedStar = document.querySelector('input[name="rating"]:checked');
-                if (checkedStar) checkedStar.checked = false;
-
+                // 확인 버튼을 누르면 이벤트를 다시 발생시키지 않고 직접 제출합니다.
                 reviewForm.submit();
-
             }
         });
     </script>

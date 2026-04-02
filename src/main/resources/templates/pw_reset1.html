@@ -15,14 +15,15 @@
 </head>
 <body>
     <div class="auth-box">
-        <h2 class="mb-5 fw-bold">비밀번호 찾기</h2>
-        <form action="pw_reset2.html">
-            <input type="text" class="form-control" placeholder="아이디를 입력해주세요.">
-            <input type="email" class="form-control" placeholder="이메일을 입력해주세요.">
-            <button type="submit" class="btn btn-orange">비밀번호 찾기</button>
+        <h2 class="mb-5 fw-bold">비밀번호 재설정</h2>
+        <form action="/user/reset-password" method="post">
+            <input type="text" name="userId" class="form-control" placeholder="아이디를 입력해주세요." required>
+            <input type="email" name="email" class="form-control" placeholder="이메일을 입력해주세요." required>
+            <input type="password" name="newPassword" class="form-control" placeholder="새 비밀번호를 입력해주세요." required>
+            <button type="submit" class="btn btn-orange">비밀번호 재설정</button>
         </form>
         <div class="auth-links">
-            <a href="id_search.html">아이디 찾기</a> | <a href="login.html">로그인 하러 가기</a>
+            <a href="/user/find-id">아이디 찾기</a> | <a href="/user/login">로그인 하러 가기</a>
         </div>
     </div>
 </body>

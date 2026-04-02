@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>회원 가입</title>
@@ -48,19 +48,21 @@
 <body>
     <div class="container text-center mt-5">
         <h2 class="mb-5 fw-bold">회원 가입</h2>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
         <div class="signup-container text-start">
-            <form id="signupForm" action="/signup" method="post">
+            <form id="signupForm" action="/user/signup" method="post">
+                <input type="hidden" id="email" name="email">
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-3 form-label">● 아이디 *</label>
-                    <div class="col-sm-6"><input type="text" id="userId" name="userId" class="form-control"></div>
+                    <div class="col-sm-6"><input type="text" id="userId" name="userId" class="form-control" required></div>
                     <div class="col-sm-3 info-text">4자 이상/ 특수문자 제외</div>
                 </div>
 
                 <div class="row mb-3 align-items-center">
                     <label class="col-sm-3 form-label">● 이메일 *</label>
-                    <div class="col-sm-3"><input type="text" id="email1" name="email1" class="form-control" placeholder="example"></div>
+                    <div class="col-sm-3"><input type="text" id="email1" class="form-control" placeholder="example" required></div>
                     <div class="col-auto px-0 text-center" style="width: 10px;">@</div>
-                    <div class="col-sm-2"><input type="text" id="email2" name="email2" class="form-control" placeholder="naver.com"></div>
+                    <div class="col-sm-2"><input type="text" id="email2" class="form-control" placeholder="naver.com" required></div>
                     <div class="col-sm-2">
                         <select class="form-select" id="emailSelect" onchange="document.getElementById('email2').value=this.value">
                             <option value="">직접 입력</option>
@@ -90,7 +92,7 @@
 
                 <div class="row mb-4 align-items-center">
                     <label class="col-sm-3 form-label">● 닉네임 *</label>
-                    <div class="col-sm-6"><input type="text" id="nickname" name="nickname" class="form-control"></div>
+                    <div class="col-sm-6"><input type="text" id="nickname" name="nickname" class="form-control" required></div>
                 </div>
 
                 <div class="text-center mt-5">
@@ -193,6 +195,11 @@
             if (Math.abs(val - gapPos.x) <= 5) {
                 status.innerText = "검증 성공! 가입을 처리합니다.";
                 status.style.color = "green";
+                
+                // 이메일 합치기
+                const email1 = document.getElementById('email1').value.trim();
+                const email2 = document.getElementById('email2').value.trim();
+                document.getElementById('email').value = email1 + "@" + email2;
                 
                 // ★ 핵심: 1초 뒤에 실제로 폼 데이터를 서버로 전송!
                 setTimeout(() => {

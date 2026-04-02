@@ -109,13 +109,13 @@
 </head>
 <body>
   <header>
-    <a class="logo" href="index.html">
+    <a class="logo" th:href="@{/books/index}">
       <span class="logo-icon">📚</span>
       <span class="logo-text">도서관리시스템</span>
     </a>
     <nav>
-      <a href="index.html" class="btn-logout">로그아웃</a>
-      <a href="mypage.html" class="btn-mypage">마이페이지</a>
+      <a th:href="@{/user/logout}" class="btn-logout">로그아웃</a>
+      <a th:href="@{/loans/my-loans}" class="btn-mypage">마이페이지</a>
     </nav>
   </header>
 </body>

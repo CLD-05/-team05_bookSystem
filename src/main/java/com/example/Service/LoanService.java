@@ -79,7 +79,7 @@ public class LoanService {
         loan.setReturnDate(LocalDateTime.now());
         loan.setStatus("RETURNED");
 
-        // 리뷰/별점 처리
+        // 리뷰/별점 처리 (반납 시 동시에 할 경우)
         if (rating != null) {
             loan.setRating(rating);
         }
@@ -99,6 +99,30 @@ public class LoanService {
         updateBookAverageRating(book);
 
         return "[" + book.getTitle() + "] 반납 완료!";
+    }
+
+    /**
+     * 2-1. 반납 후 리뷰만 별도로 저장
+     */
+    @Transactional
+    public void saveReview(Integer bookId, Double rating, String comment) {
+        BookEntity book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("도서 정보를 찾을 수 없습니다."));
+
+        // 가장 최근의 RETURNED 상태인 대여 기록을 찾음
+        // (방금 반납한 기록에 리뷰를 남기는 상황이므로)
+        LoanEntity loan = loanRepository.findTopByBookAndStatusOrderByReturnDateDesc(book, "RETURNED")
+                .orElseThrow(() -> new IllegalArgumentException("반납된 대출 기록을 찾을 수 없습니다."));
+
+        if (rating != null) {
+            loan.setRating(rating);
+        }
+        if (comment != null && !comment.trim().isEmpty()) {
+            loan.setReviewContent(comment);
+        }
+
+        // 도서의 평균 별점 다시 계산
+        updateBookAverageRating(book);
     }
 
     /**

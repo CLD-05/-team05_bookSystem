@@ -2,6 +2,8 @@ package com.example.Controller;
 
 import com.example.Entity.BookEntity;
 import com.example.Service.BookService;
+import com.example.Service.LoanService;
+import com.example.Dto.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final LoanService loanService;
 
     /**
      * [수정됨] 메인 페이지 (index.html) 연동
@@ -54,12 +57,24 @@ public class BookController {
     }
 
     /**
+     * 도서 반납 후 리뷰 작성을 위한 페이지 연동
+     */
+    @GetMapping("/return")
+    public String returnReviewPage(@RequestParam Integer bookId, Model model) {
+        model.addAttribute("bookId", bookId);
+        return "return";
+    }
+
+    /**
      * 도서 상세 페이지 연동
      */
     @GetMapping("/detail/{id}")
     public String getBookDetail(@PathVariable Integer id, Model model) { // Long -> Integer로 수정 (Entity에 맞춤)
         BookEntity book = bookService.getBookById(id);
+        List<ReviewResponseDto> reviews = loanService.getBookReviews(id);
+
         model.addAttribute("book", book);
+        model.addAttribute("reviews", reviews);
         return "book_detail";
     }
 }

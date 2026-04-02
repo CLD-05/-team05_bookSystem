@@ -375,146 +375,59 @@
 </head>
 <body>
 
-  <!-- Header (header.html fetch로 삽입) -->
-  <div id="header-container"></div>
+  <!-- Header fragment -->
+  <div th:replace="~{header :: header}"></div>
 
   <main>
     <!-- Search Bar -->
-    <div class="search-section">
+    <form th:action="@{/books/search}" method="get" class="search-section">
       <div class="search-field">
-        <label for="input-title">책제목:</label>
-        <input type="text" id="input-title" placeholder="제목 입력" />
+        <label for="input-keyword">검색어:</label>
+        <input type="text" id="input-keyword" name="keyword" th:value="${keyword}" placeholder="검색어 입력" />
       </div>
       <div class="search-field">
-        <label for="input-author">저자명:</label>
-        <input type="text" id="input-author" placeholder="저자 입력" />
+        <label for="select-type">분류:</label>
+        <select id="select-type" name="type" style="padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: #FAF9F7;">
+          <option value="title" th:selected="${searchType == 'title'}">제목</option>
+          <option value="author" th:selected="${searchType == 'author'}">저자</option>
+        </select>
       </div>
-      <button class="btn-search" onclick="searchBooks()">검색</button>
-    </div>
+      <button type="submit" class="btn-search">검색</button>
+    </form>
 
     <!-- Results -->
     <div class="results-header">
       <span class="results-title">조회 결과</span>
+      <span class="results-count" th:text="${books.size()} + '권'">0권</span>
     </div>
 
     <div class="results-box" id="results-box">
-      <!-- 카드가 JS로 렌더링됨 -->
+      <div th:each="book : ${books}" class="book-card" th:onclick="'location.href=\'/books/detail/' + ${book.bookId} + '\''">
+        <div class="book-cover">
+          <img th:if="${book.imageUrl != null}" th:src="${book.imageUrl}" alt="표지">
+          <span th:unless="${book.imageUrl != null}">📖</span>
+        </div>
+        <div class="book-info">
+          <div class="book-title" th:text="'책제목: ' + ${book.title}">책제목: 자바의 정석</div>
+          <div class="book-author" th:text="'저자명: ' + ${book.author}">저자명: 남궁성</div>
+          <div class="book-meta-row">
+            <span th:class="'badge ' + (${book.status == 'AVAILABLE' ? 'available' : 'rented'})">
+              <span class="badge-dot"></span>
+              <span th:text="'대여상태: ' + (${book.status == 'AVAILABLE' ? '대여 가능' : '대여 중'})">대여상태: 대여 가능</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(books)}" class="empty-state">
+        <div class="icon">🔍</div>
+        <p>검색 결과가 없습니다.</p>
+      </div>
     </div>
   </main>
 
   <script>
-    const BASE_URL = "http://localhost:8080";
- 
-    const statusLabel = {
-      AVAILABLE: "대여 가능",
-      RENTED:    "대여 중",
-      DELETED:   "폐기"
-    };
- 
-    const statusClass = {
-      AVAILABLE: "available",
-      RENTED:    "rented",
-      DELETED:   "rented"
-    };
- 
-    // ── 카드 렌더링 ──────────────────────────────────────────
-    function renderBooks(books) {
-      const box = document.getElementById('results-box');
-      box.innerHTML = '';
- 
-      // DELETED 제외
-      const visible = books.filter(b => b.status !== 'DELETED');
- 
-      if (visible.length === 0) {
-        box.innerHTML = `
-          <div class="empty-state">
-            <div class="icon">🔍</div>
-            <p>검색 결과가 없습니다.</p>
-          </div>`;
-        return;
-      }
- 
-      visible.forEach(book => {
-        const status = book.status || 'AVAILABLE';
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.dataset.id = book.book_id;
-        card.innerHTML = `
-          <div class="book-cover">📖</div>
-          <div class="book-info">
-            <div class="book-title">책제목: ${book.title}</div>
-            <div class="book-author">저자명: ${book.author}</div>
-            <div class="book-meta-row">
-              <span class="badge ${statusClass[status] ?? 'available'}">
-                <span class="badge-dot"></span>
-                대여상태: ${statusLabel[status] ?? status}
-              </span>
-            </div>
-          </div>`;
-        card.addEventListener('click', () => toggleSelect(card));
-        box.appendChild(card);
-      });
-    }
- 
-    // ── 카드 선택 토글 ───────────────────────────────────────
-    function toggleSelect(card) {
-      document.querySelectorAll('.book-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-    }
- 
-    // ── 검색 ────────────────────────────────────────────────
-    async function searchBooks() {
-      const titleQ  = document.getElementById('input-title').value.trim();
-      const authorQ = document.getElementById('input-author').value.trim();
-      const box     = document.getElementById('results-box');
- 
-      // 둘 다 비어있으면 전체 조회
-      let url;
-      if (titleQ) {
-        url = `${BASE_URL}/api/books/search/title?keyword=${encodeURIComponent(titleQ)}`;
-      } else if (authorQ) {
-        url = `${BASE_URL}/api/books/search/author?keyword=${encodeURIComponent(authorQ)}`;
-      } else {
-        url = `${BASE_URL}/api/books/all`;
-      }
- 
-      box.innerHTML = `
-        <div class="empty-state">
-          <p>검색 중...</p>
-        </div>`;
- 
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("검색 실패");
- 
-        const books = await res.json();
-        renderBooks(books);
- 
-      } catch (e) {
-        box.innerHTML = `
-          <div class="empty-state">
-            <div class="icon">⚠️</div>
-            <p>검색 중 오류가 발생했습니다.</p>
-          </div>`;
-      }
-    }
- 
-    // Enter 키 검색 지원
-    ['input-title', 'input-author'].forEach(id => {
-      document.getElementById(id).addEventListener('keydown', e => {
-        if (e.key === 'Enter') searchBooks();
-      });
-    });
- 
-    // ── Header 동적 로드 ─────────────────────────────────────
-    fetch('header.html')
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById('header-container').innerHTML = html;
-      });
- 
-    // ── 초기 전체 목록 로드 ──────────────────────────────────
-    searchBooks();
+    // 기존의 클라이언트 사이드 fetch 로직은 타임리프 서버 사이드 렌더링으로 대체되었습니다.
   </script>
 
 </body>

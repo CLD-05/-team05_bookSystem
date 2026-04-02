@@ -227,42 +227,44 @@
 </head>
 <body>
 
-<div th:replace="~{header :: header}"></div>
+<div th:replace="~{header_admin :: header}"></div>
 
 <main>
     <div class="page-title">도서 관리</div>
 
-    <div class="form-wrap">
-        <div class="img-upload" id="img-upload-box">
-            <input type="file" id="img-input" accept="image/*" onchange="previewImage(event)" />
-            <img id="preview" alt="미리보기" />
-            <div class="img-placeholder" id="img-placeholder">
-                <span class="icon">🖼️</span>
-                <span>img</span>
-                <span style="font-size:11px;color:#B45309;">클릭하여 추가</span>
+    <form th:action="@{/admin/books/register}" method="post" enctype="multipart/form-data">
+        <div class="form-wrap">
+            <div class="img-upload" id="img-upload-box">
+                <input type="file" name="imageFile" id="img-input" accept="image/*" onchange="previewImage(event)" />
+                <img id="preview" alt="미리보기" />
+                <div class="img-placeholder" id="img-placeholder">
+                    <span class="icon">🖼️</span>
+                    <span>img</span>
+                    <span style="font-size:11px;color:#B45309;">클릭하여 추가</span>
+                </div>
+            </div>
+
+            <div class="fields">
+                <div class="field-row">
+                    <label for="input-title">제목</label>
+                    <input type="text" id="input-title" name="title" placeholder="책 제목 입력" required />
+                </div>
+                <div class="field-row">
+                    <label for="input-author">저자</label>
+                    <input type="text" id="input-author" name="author" placeholder="저자명 입력" required />
+                </div>
+                <div class="field-row">
+                    <label for="input-desc">한줄 설명</label>
+                    <textarea id="input-desc" name="description" placeholder="한줄 설명 입력"></textarea>
+                </div>
             </div>
         </div>
 
-        <div class="fields">
-            <div class="field-row">
-                <label for="input-title">제목</label>
-                <input type="text" id="input-title" placeholder="책 제목 입력" />
-            </div>
-            <div class="field-row">
-                <label for="input-author">저자</label>
-                <input type="text" id="input-author" placeholder="저자명 입력" />
-            </div>
-            <div class="field-row">
-                <label for="input-desc">한줄 설명</label>
-                <textarea id="input-desc" placeholder="한줄 설명 입력"></textarea>
-            </div>
+        <div class="submit-wrap">
+            <button type="submit" class="btn-submit">신규 도서 등록</button>
         </div>
-    </div>
-
-    <div class="submit-wrap">
-        <button class="btn-submit" onclick="submitBook()">신규 도서 등록</button>
-    </div>
-    <p class="error-msg" id="error-msg"></p>
+    </form>
+    <p class="error-msg" th:if="${param.error}" th:text="${param.error == 'fail' ? '등록에 실패했습니다. 다시 시도해주세요.' : ''}"></p>
 </main>
 
 <script>
@@ -282,56 +284,7 @@
     }
 
     // ── 도서 등록 ─────────────────────────────────────────
-    async function submitBook() {
-        const title  = document.getElementById('input-title').value.trim();
-        const author = document.getElementById('input-author').value.trim();
-        const desc   = document.getElementById('input-desc').value.trim();
-        const msg    = document.getElementById('error-msg');
-        const btn    = document.querySelector('.btn-submit');
-
-        if (!title) {
-            msg.textContent = "제목을 입력해주세요.";
-            document.getElementById('input-title').focus();
-            return;
-        }
-        if (!author) {
-            msg.textContent = "저자를 입력해주세요.";
-            document.getElementById('input-author').focus();
-            return;
-        }
-
-        btn.textContent = "등록 중...";
-        btn.disabled = true;
-        msg.textContent = "";
-
-        try {
-            // localhost 하드코딩 제거, 상대 경로 사용
-            const res = await fetch("/api/admin/books/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title,
-                    author,
-                    description: desc,
-                    image_url: "" // 이미지 업로드 API 준비되면 교체
-                })
-            });
-
-            if (res.ok) {
-                // 등록 성공 시 타임리프/스프링 환경에 맞게 리다이렉트 (컨트롤러 매핑 주소로 변경)
-                window.location.href = "/admin/index";
-            } else {
-                const data = await res.json().catch(() => ({}));
-                msg.textContent = data.message ?? "등록에 실패했습니다. 다시 시도해주세요.";
-            }
-
-        } catch (e) {
-            msg.textContent = "서버에 연결할 수 없습니다.";
-        } finally {
-            btn.textContent = "신규 도서 등록";
-            btn.disabled = false;
-        }
-    }
+    // submitBook() 함수는 Form Post 방식으로 변경되었으므로 삭제되었습니다.
 
     // JS로 헤더를 불러오던 fetch 코드는 타임리프가 대신 처리하므로 삭제했습니다!
 </script>

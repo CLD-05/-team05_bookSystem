@@ -32,9 +32,14 @@ public class UserController {
 
     // 1. 회원가입 처리 (액션)
     @PostMapping("/signup")
-    public String signUp(@ModelAttribute SignUpDto dto) {
-        userService.signUp(dto);
-        return "sign_up_result"; // sign_up_result.html (가입완료 알림 페이지)
+    public String signUp(@ModelAttribute SignUpDto dto, Model model) {
+        try {
+            userService.signUp(dto);
+            return "sign_up_result"; // sign_up_result.html (가입완료 알림 페이지)
+        } catch (Exception e) {
+            model.addAttribute("error", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            return "sign_up";
+        }
     }
 
     // 2. 로그인 처리 (세션 저장 및 리다이렉트)

@@ -5,12 +5,12 @@ http://www.thymeleaf.org/
 <body>
 <div th:fragment="header">
     <header>
-        <a class="logo" th:href="@{/admin/index}">
+        <a class="logo" th:href="@{/admin/books}">
             <span class="logo-icon">📚</span>
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
-            <a th:href="@{/admin/login}" class="btn-logout">로그아웃</a>
+            <a th:href="@{/user/logout}" class="btn-logout">로그아웃</a>
         </nav>
     </header>
 </div>

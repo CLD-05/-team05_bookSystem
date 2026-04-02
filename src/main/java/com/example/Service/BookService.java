@@ -6,8 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,11 +22,37 @@ public class BookService {
 
     // [관리자용] 1. 새 도서 등록
     @Transactional
-    public BookEntity registerBook(BookEntity bookEntity) {
+    public BookEntity registerBook(BookEntity bookEntity, MultipartFile imageFile) {
+        // 1. 이미지가 비어있지 않다면 서버 폴더에 저장
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String fileName = saveImage(imageFile); // 파일 저장 로직
+            bookEntity.setImageUrl("/uploads/" + fileName); // DB에는 저장된 경로만 기록
+        }
+
         bookEntity.setStatus("AVAILABLE"); // 초기값 강제 설정
         bookEntity.setRentalHitCount(0);
         bookEntity.setAvgRating(new java.math.BigDecimal("0.0"));
         return bookRepository.save(bookEntity);
+    }
+
+    // 이미지 저장 전용 프라이빗 메서드
+    private String saveImage(MultipartFile file) {
+        String uploadPath = Paths.get(System.getProperty("user.dir"), "uploads").toString();
+        java.io.File folder = new java.io.File(uploadPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(uploadPath, fileName);
+
+        try {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 중 오류가 발생했습니다.", e);
+        }
+
+        return fileName;
     }
 
     // [관리자용] 2. 도서 삭제 (논리 삭제)
@@ -72,15 +103,6 @@ public class BookService {
     public BookEntity getBookById(Integer id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습니다. id=" + id));
-    }
-
-    public void registerBook(BookEntity book, MultipartFile imageFile) {
-        // 1. 이미지가 비어있지 않다면 서버 폴더나 S3에 저장
-        if (!imageFile.isEmpty()) {
-            String fileName = saveImage(imageFile); // 파일 저장 로직
-            book.setImageUrl("/uploads/" + fileName); // DB에는 저장된 경로만 기록
-        }
-        bookRepository.save(book);
     }
 
 } // <--- 여기가 클래스가 진짜 끝나는 괄호입니다!

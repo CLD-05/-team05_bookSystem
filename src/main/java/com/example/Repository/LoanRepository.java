@@ -24,4 +24,7 @@ public interface LoanRepository extends JpaRepository<LoanEntity, Integer> {
 
     // 2. 현재 대출 중인 것만 (상태가 BORROWED인 것)
     List<LoanEntity> findByStatusOrderByDueDateAsc(String status);
+
+    // 3. 특정 도서의 가장 최근 반납 기록 찾기
+    Optional<LoanEntity> findTopByBookAndStatusOrderByReturnDateDesc(BookEntity book, String status);
 }

@@ -278,37 +278,36 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
 
 <body>
     <header>
-        <a class="logo" th:href="@{/}">
+        <a class="logo" th:href="@{/books/index}">
             <span class="logo-icon">📚</span>
             <span class="logo-text">도서관리시스템</span>
         </a>
         <nav>
-            <a th:if="${session.user == null}" th:href="@{/login}" class="btn-login">로그인</a>
+            <a th:if="${session.loggedInUser == null}" th:href="@{/user/login}" class="btn-login">로그인</a>
 
-            <th:block th:if="${session.user != null}">
-                <a href="/logout" class="btn-logout">로그아웃</a>
-                <a th:href="@{/mypage}" class="btn-mypage">마이페이지</a>
+            <th:block th:if="${session.loggedInUser != null}">
+                <a th:href="@{/user/logout}" class="btn-logout">로그아웃</a>
+                <a th:href="@{/loans/my-loans}" class="btn-mypage">마이페이지</a>
             </th:block>
 
         </nav>
     </header>
     <main>
         <div class="search-section">
-            <div class="search-field">
-                <label for="input-title">책제목:</label>
-                <input type="text" id="input-title" placeholder="제목 입력" />
-            </div>
-            <div class="search-field">
-                <label for="input-author">저자명:</label>
-                <input type="text" id="input-author" placeholder="저자 입력" />
-            </div>
-            <button class="btn-search" onclick="searchBooks()">검색</button>
+            <form th:action="@{/books/search}" method="get" style="display: flex; align-items: center; gap: 20px; width: 100%;">
+                <div class="search-field">
+                    <label for="input-keyword">검색어:</label>
+                    <input type="text" id="input-keyword" name="keyword" placeholder="제목 또는 저자 입력" style="width: 300px;" />
+                </div>
+                <input type="hidden" name="type" value="title" />
+                <button type="submit" class="btn-search">검색</button>
+            </form>
         </div>
     </main>
     <section style="margin: 0 auto;">
         <h2 style="margin-left: 200px;">인기도서</h2>
         <div class="popular-book">
-            <a th:each="book, stat : ${books}" th:if="${stat.index < 4}" th:href="@{/book/detail/{id}(id=${book.id})}">
+            <a th:each="book, stat : ${popularBooks}" th:if="${stat.index < 4}" th:href="@{/books/detail/{id}(id=${book.bookId})}">
                 <div>
                     <img th:src="${book.imageUrl}" alt="도서 이미지">
                 </div>
@@ -319,14 +318,13 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
                 </div>
             </a>
 
-            <a href="book_detail.html">
+            <!-- 정적 Mock 데이터는 삭제하거나 실제 데이터로 연결합니다. -->
+            <a th:if="${#lists.isEmpty(popularBooks)}" href="#">
                 <div>
-                    <img src="https://image.aladin.co.kr/product/38595/26/cover200/k782136276_3.jpg" alt="">
+                    <img src="https://via.placeholder.com/150" alt="도서 이미지">
                 </div>
                 <div class="book-info">
-                    <p>책 제목</p>
-                    <p>저자</p>
-                    <p>한줄 설명</p>
+                    <p>인기 도서가 없습니다.</p>
                 </div>
             </a>
 
@@ -346,8 +344,10 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
                 </tr>
             </thead>
             <tbody>
-                <tr th:each=" book : ${allBooks}">
-                    <td th:text="${book.title}">제목</td>
+                <tr th:each=" book : ${popularBooks}">
+                    <td>
+                        <a th:href="@{/books/detail/{id}(id=${book.bookId})}" th:text="${book.title}" style="text-decoration: none; color: inherit;">제목</a>
+                    </td>
                     <td th:text="${book.author}">저자</td>
                     <td th:text="${book.description}">한줄 설명</td>
                 </tr>
@@ -420,7 +420,7 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=s
 
             books.forEach(book => {
                 const bookHtml = `
-                <a href="/book/detail/${book.bookId}">
+                <a href="/books/detail/${book.bookId}">
                     <div>
                         <img src="${book.imageUrl || 'https://via.placeholder.com/150'}" alt="도서 이미지">
                     </div>

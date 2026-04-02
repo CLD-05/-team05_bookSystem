@@ -16,13 +16,13 @@
 <body>
     <div class="auth-box">
         <h2 class="mb-5 fw-bold">아이디 찾기</h2>
-        <form action="id_search_result.html">
-            <input type="text" class="form-control" placeholder="닉네임을 입력해주세요.">
-            <input type="email" class="form-control" placeholder="이메일을 입력해주세요.">
+        <form action="/user/find-id" method="post">
+            <input type="text" name="nickname" class="form-control" placeholder="닉네임을 입력해주세요." required>
+            <input type="email" name="email" class="form-control" placeholder="이메일을 입력해주세요." required>
             <button type="submit" class="btn btn-orange">아이디 찾기</button>
         </form>
         <div class="auth-links">
-            <a href="pw_reset1.html">비밀번호 찾기</a> | <a href="login.html">로그인 하러 가기</a>
+            <a href="/user/reset-password">비밀번호 찾기</a> | <a href="/user/login">로그인 하러 가기</a>
         </div>
     </div>
 </body>

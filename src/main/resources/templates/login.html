@@ -19,14 +19,14 @@
 <body>
     <div class="auth-box">
         <h2 class="mb-5 fw-bold">로그인</h2>
-        <form>
-            <input type="text" class="form-control" placeholder="아이디를 입력해주세요.">
-            <input type="password" class="form-control" placeholder="비밀번호를 입력해주세요.">
+        <form action="/user/login" method="post">
+            <input type="text" name="userId" class="form-control" placeholder="아이디를 입력해주세요." required>
+            <input type="password" name="password" class="form-control" placeholder="비밀번호를 입력해주세요." required>
             <button type="submit" class="btn btn-orange">로그인</button>
         </form>
         <div class="auth-links">
-            <a href="id_search.html">아이디 찾기</a> | <a href="pw_reset1.html">비밀번호 찾기</a>
-            <p class="mt-3"><a href="sign_up.html" class="text-dark">회원 가입</a></p>
+            <a href="/user/find-id">아이디 찾기</a> | <a href="/user/reset-password">비밀번호 찾기</a>
+            <p class="mt-3"><a href="/user/signup" class="text-dark">회원 가입</a></p>
         </div>
     </div>
 </body>

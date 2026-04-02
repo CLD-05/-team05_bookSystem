@@ -108,8 +108,8 @@ https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&displ
 <div class="login-wrapper">
     <h1>관리자 로그인</h1>
 
-    <!-- 로그인 form → 백엔드 POST /admin/login -->
-    <form th:action="@{/admin/login}" method="post" class="login-box">
+    <!-- 로그인 form → 백엔드 POST /user/login -->
+    <form th:action="@{/user/login}" method="post" class="login-box">
 
         <input type="text"
                name="userId"

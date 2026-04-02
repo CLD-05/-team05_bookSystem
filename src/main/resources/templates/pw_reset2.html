@@ -14,8 +14,8 @@
 <body>
     <div class="auth-box">
         <h2 class="mb-5 fw-bold">비밀번호 재설정</h2>
-        <form action="pw_search_result.html">
-            <input type="password" class="form-control" placeholder="비밀번호를 입력해주세요.">
+        <form th:action="@{/user/reset-password}" method="post">
+            <input type="password" name="newPassword" class="form-control" placeholder="비밀번호를 입력해주세요.">
             <input type="password" class="form-control" placeholder="다시 한번 입력해주세요.">
             <button type="submit" class="btn btn-orange">비밀번호 재설정</button>
         </form>
